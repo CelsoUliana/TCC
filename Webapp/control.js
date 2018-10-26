@@ -10,6 +10,8 @@ var map = new ol.Map({
                 url: 'http://localhost:8099/geoserver/wms',
                 params: {'LAYERS': 'teste:brufe250gc_sir', 'TILED': true},
                 serverType: 'geoserver',
+                //opacity: 0.5,
+                //transparent: true,
                 // Countries have transparency, so do not fade tiles:
                 transition: 0
             })
