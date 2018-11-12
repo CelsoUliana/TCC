@@ -14,8 +14,6 @@ main.get('/page2', (req, res) => {
     res.render('pages/page2')
 })
 
-main.post()
-
 main.listen(8080, () => {
     console.log ('server rodando')
 })
