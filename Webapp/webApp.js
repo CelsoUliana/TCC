@@ -19,6 +19,7 @@ main.set('views', path.join(__dirname, 'views'))
 */
 main.use(express.static('public/css'))
 main.use(express.static('public/js'))
+main.use('/jquery', express.static(path.join(__dirname, 'node_modules/jquery/dist/')));
 
 /* Routes */
 main.get('/', (req, res) => {
@@ -37,8 +38,8 @@ main.get('/map1', (req, res) => {
     res.render('pages/mapleaflet')
 })
 
-/* listem port */
-main.listen(8081, () => {
+/* listen port */
+main.listen(8080, () => {
     console.log ('server rodando')
 })
 
