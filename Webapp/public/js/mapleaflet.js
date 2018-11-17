@@ -1,5 +1,44 @@
 $('#map-run').ready(() => {
-    
+
+    /* [[ lat, lng ], [ lat, lng] ...] time é suposto ser com intervalo já trazido bd */
+    let moveAtTime = [ 
+    [ -20.495205240760757,  -54.615054130554206 ],
+    [ -20.49524543962251,   -54.61389541625977  ],
+    [ -20.495727825141106,  -54.61329460144044  ],
+    [ -20.49705437748945,   -54.612607955932624 ],
+    [ -20.49705437748945,   -54.61153507232666  ],
+    [ -20.49705437748945,   -54.610118865966804 ],
+    [ -20.49813972996192,   -54.61080551147462  ],
+    [ -20.498059333746067,  -54.61247920989991  ],
+    [ -20.497456360782838,  -54.61277961730958  ],
+    [ -20.497536757314993,  -54.61299419403077  ],
+    [ -20.497737748460892,  -54.613122940063484 ],
+    [ -20.497898541187823,  -54.613122940063484 ],
+    [ -20.498300522267122,  -54.61299419403077  ],
+    [ -20.50091337358198,   -54.611191749572754 ],
+    [ -20.50280263831797,   -54.60724353790284  ],
+    [ -20.50308401617923,   -54.60702896118165  ],
+    [ -20.503365393523755,  -54.6072006225586   ],
+    [ -20.503285000049473,  -54.60745811462403  ],
+    [ -20.503847753483587,  -54.60754394531251  ],
+    [ -20.504008539799393,  -54.607586860656745 ],
+    [ -20.504008539799393,  -54.60801601409913  ],
+    [ -20.504008539799393,  -54.60853099822999  ],
+    [ -20.503686966999044,  -54.61020469665528  ],
+    [ -20.50091337358198,   -54.61496829986573  ],
+    [ -20.50095357094656,   -54.61844444274903  ],
+    [ -20.496491599107486,  -54.6202039718628   ],
+    [ -20.50023001677089,   -54.62316513061524  ],
+    [ -20.50215948698049,   -54.619903564453125 ],
+    [ -20.503928146662584,  -54.61621284484864  ],
+    [ -20.503405590245073,  -54.61368083953858  ],
+    [ -20.50095357094656,   -54.61316585540772  ],
+    [ -20.499747645422445,  -54.61368083953858  ],
+    [ -20.498340720317074,  -54.615054130554206 ],
+    [ -20.49757695556527,   -54.615054130554206 ]]
+
+    let escobar_ = [[-20.497434, -54.608478], [-20.495084644112268, -54.61320877075196]]
+   
     let escobar = [-20.497434, -54.608478]
     let embrapa = [-20.444646, -54.723093]
 
@@ -17,10 +56,47 @@ $('#map-run').ready(() => {
 
     /* rum map */
     let map = L.map('map-run', {
-        center: escobar,
-        zoom: zoomControl,
-        layers: [maptileLayer]
+        center:             escobar,
+        zoom:               zoomControl,
+        layers:             [maptileLayer],
+        doubleClickZoom:    false
     });
+
+    /* Classe de polyline que pode ser instanciada */
+    let Polylines = () => {
+        
+        let id
+        let points = []
+
+        return {
+            add: (array) => {
+                
+                points = array
+                
+                id = L.polyline(array, {
+                    color: 'red',      
+                }).addTo(map)
+            },
+            remove: () => { map.removeLayer(id) },
+            get: () => { return id },
+            points: () => { return points }, 
+            reset: () => { points = null }
+        }
+    }
+
+    let polylineMove = Polylines()
+    let polylineDraw = Polylines()
+    let polylineMarker = Polylines()
+
+    /* menu-opt */
+    let opt = { 
+        DRAW:      { desc: 'desenhar area',     state: true,     elements: {polyline: polylineDraw} }, 
+        MOVE:      { desc: 'movimentação',      state: false,    elements: {polyline: polylineMove} }, 
+        MARKER:    {desc: 'marcador',           state: false,    elements: {polyline: polylineMarker}}
+    }
+
+    /* set draw as default */
+    let selectedOpt = opt.DRAW
 
     /* other way
     let map = L.map('map-run')
@@ -35,10 +111,9 @@ $('#map-run').ready(() => {
         position: 'bottompright'
     })
 
-    let labels = {
-        'des-area': 'desenhar area',
-        'move': 'movimentação',
-        'marker': 'marker'
+    /* get the key obj by indice */
+    function getKeyObj(obj, indice){        
+        return (Object.entries(obj)[indice][0])        
     }
 
     /* create the control */
@@ -51,12 +126,12 @@ $('#map-run').ready(() => {
         div.innerHTML = '<form>' +
             '<div id="menuOpt">'
 
-        for (let i in labels)
-            div.innerHTML += '<input id="menuOpt-' + i + '" type="checkbox"/>' + labels[i] + '<br>'
+        for (i in opt)            
+            div.innerHTML += '<input id="menuOpt-' + i + '" type="checkbox"/>' + opt[i].desc + '<br>'
 
         div.innerHTML += '</div>' +
             '</form>'
-
+        
         return div
     }
     
@@ -78,11 +153,14 @@ $('#map-run').ready(() => {
     $('.menuOpt').css({
 
         'background-color': '#fff',
-        'border-width': '1px',
-        'border-style': 'solid',
-        'padding': '10px'
+        'border-width':     '1px',
+        'border-style':     'solid',
+        'padding':          '10px'
 
     })
+
+    /* set default selection menuOpt */
+    $('#' + 'menuOpt-' + getKeyObj(opt, 0)).prop("checked", true)    
 
     /* there was need to put 'function (event)'. arrow function don't work 
         this function ensures that only one selector is selected */
@@ -91,13 +169,26 @@ $('#map-run').ready(() => {
         event.stopPropagation();
 
         let checkBoxe = this.getAttribute('id')
+        
+        if ($('#' + checkBoxe + ':checked').val()){
 
+            let check = getOptQuery(checkBoxe)
+            
+            configOpt(check)            
+
+        }
         $('.menuOpt').find('input').each(function () {
+            let setOpt = []
 
-            if (checkBoxe != this.getAttribute('id'))
+            if (checkBoxe != this.getAttribute('id')){
 
                 $('#' + this.getAttribute('id')).prop("checked", false)
 
+                setOpt.push(getOptQuery(this.getAttribute('id')))   
+                console.log(this.getAttribute('id'))
+            }
+
+            clearMap(setOpt)
         })
 
     }).on('click', function (event) {
@@ -108,6 +199,24 @@ $('#map-run').ready(() => {
         event.stopImmediatePropagation() */
     })
 
+    function getOptQuery(element) {
+        return element.replace('menuOpt-', '')
+    }
+
+    function configOpt(check){
+        console.log(check)
+
+        for(find in opt)
+
+            if (check == find)
+                selectedOpt = opt[find]
+
+        if (selectedOpt == opt.MOVE)
+            getMove()
+        
+        if (selectedOpt == opt.MARKER)
+            getMarkers()
+    }
 
     /* create a fabric function of coordinates */
     let Pointer = () => {
@@ -116,7 +225,6 @@ $('#map-run').ready(() => {
         let longitude = 0
 
         return {
-
             setLatitude: (lat) => { latitude = lat },
             setLongitude: (lng) => { longitude = lng },
             getLatitude: () => { return latitude },
@@ -129,62 +237,96 @@ $('#map-run').ready(() => {
         return method(lat, lng)
     }
 
-    /* event when mouse clicked */
+    /* event when mouse clicked (drawing..) */
     map.on('mousedown', (event) => {
 
-        useLatLng(event.latlng.lat, event.latlng.lng, (lat, lng) => {
+        if (selectedOpt == opt.DRAW){
 
-            let coord = Pointer()
+            if (points < 2)
+                points.pop
 
-            coord.setLatitude(lat)
-            coord.setLongitude(lng)
+            useLatLng(event.latlng.lat, event.latlng.lng, (lat, lng) => {
+    
+                let coord = Pointer()
+    
+                coord.setLatitude(lat)
+                coord.setLongitude(lng)
+    
+                points.push([coord.getLatitude(), coord.getLongitude()])
 
-            points.push([coord.getLatitude(), coord.getLongitude()])
-        })
-
-        console.log('clicked')
-        printLast()
+            })
+    
+            console.log('clicked')
+            printLast()
+        }
     })
 
-    /* lines */
-    /* exemplo leaflet */
-   /*  let latlngs = [
-        [-20.495526831359516, -54.613337516784675],
-        [-20.496451400572564, -54.612822532653816],
-        [-20.50043100438461, -54.607329368591316]
-    ];
+    /* click second button mouse -> popup if wish auto-complete drawwning area */
 
-    let polyline = L.polyline(latlngs, {color: 'red'}).addTo(map);
-    // zoom the map to the polyline
- */
+
 
     /* interpolando click no map */
-    let polyline = null
-
     let setPointsMap = () => {
         
         if (points.length > 1)
             
-            polyline = L.polyline(points, {
-                color: 'red',      
-            }).addTo(map);
+            polylineDraw.add(points)
 
-        return polyline
+        if (points.length > 10)
+        
+        return polylineDraw.get
     }
 
+    /* show points drawn in screen */
     $('#map-run').on('click', function() {
         
         if (setPointsMap())
-           setPointsMap()            
+            setPointsMap()            
     })
+
+    /* events on move -> show the movement of "boi" */
+    let getMove = () => {
+        polylineMove.add(moveAtTime)
+    }
+
+    let getMarkers = () => {
+        polylineMarker.add(escobar_)
+        console.log('selecionou markers.. ')        
+    }
+
+    function clearMap(optSetClear) {
+
+        if (!opt)
+            return 
         
+        for (find in optSetClear){
+            for (el in opt){
+                if (optSetClear[find] == el){
+                    if (opt[el].elements && opt[el].elements.polyline && opt[el].elements.polyline.get() != null)  {  
+                        opt[el].elements.polyline.remove() 
+                        console.log('clear .. ')
+                    }                     
+                }
+            }
+        }
+    }
 
+    $('.teste').on('click', function () {
+        console.log('teste ..')
+        cl()
+    })
 
+    function cl () {
+        if (polylineMove.get())
+            polylineMove.remove() 
+    }
 
+    /* events on click of keyboards */
 
+    /* key esc abre janela se deseja completar */ 
 
-
-
+    /* ctl-z and ctl-y --> salvar pilha */
+    
 
 
 
@@ -193,9 +335,8 @@ $('#map-run').ready(() => {
 
         console.log('print')
 
-        for (let i in points) 
-            console.log(points[i])
-        
+        for (i in points) 
+            console.log(points[i])        
     }
 
     /* print the last coordinate */
