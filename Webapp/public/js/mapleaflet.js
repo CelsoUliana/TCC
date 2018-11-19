@@ -1,6 +1,7 @@
+
 $('#map-run').ready(() => {
 
-    /* [[ lat, lng ], [ lat, lng] ...] time é suposto ser com intervalo já trazido bd */
+    /* [[ lat, lng ], [ lat, lng] ...] time é suposto ser com intervalo já trazido bd/file/parser */
     let moveAtTime = [ 
     [ -20.495205240760757,  -54.615054130554206 ],
     [ -20.49524543962251,   -54.61389541625977  ],
@@ -62,7 +63,7 @@ $('#map-run').ready(() => {
         doubleClickZoom:    false
     });
 
-    /* Classe de polyline que pode ser instanciada */
+    /* Classe de polyline que pode ser instanciada - Polyline's class that could be instanced */
     let Polylines = () => {
         
         let id
@@ -71,7 +72,7 @@ $('#map-run').ready(() => {
         return {
             add: (array) => {
                 
-                points = array
+                points.push(array)
                 
                 id = L.polyline(array, {
                     color: 'red',      
@@ -84,15 +85,16 @@ $('#map-run').ready(() => {
         }
     }
 
+    /* instances */
     let polylineMove = Polylines()
     let polylineDraw = Polylines()
     let polylineMarker = Polylines()
 
     /* menu-opt */
     let opt = { 
-        DRAW:      { desc: 'desenhar area',     state: true,     elements: {polyline: polylineDraw} }, 
-        MOVE:      { desc: 'movimentação',      state: false,    elements: {polyline: polylineMove} }, 
-        MARKER:    { desc: 'marcador',          state: false,    elements: {polyline: polylineMarker}}
+        DRAW:      { desc: 'desenhar area',     elements: {polyline: polylineDraw} }, 
+        MOVE:      { desc: 'movimentação',      elements: {polyline: polylineMove} }, 
+        MARKER:    { desc: 'marcador',          elements: {polyline: polylineMarker} }
     }
 
     /* set draw as default */
@@ -101,7 +103,7 @@ $('#map-run').ready(() => {
     /* other way
     let map = L.map('map-run')
     map.setView(embrapa, 15)
-     */
+    */
 
     /* tile.addTo() define who will print tile */
     maptileLayer.addTo(map)
@@ -135,9 +137,11 @@ $('#map-run').ready(() => {
         return div
     }
     
+    /* add menu to map */
     menuOpt.addTo(map)
 
-    /* other way to do */
+    /*      --      other way to do     --  */
+    /* doc leaflet example */
     var baseMaps = {
         "Streets": maptileLayer,
         'grayscale': maptileLayer
@@ -148,6 +152,7 @@ $('#map-run').ready(() => {
     };
 
     L.control.layers(baseMaps, overlayMaps).addTo(map);
+     /*     --     end - other way to do    --  */
 
     /* jquery -> tentar jogar no css depois */
     $('.menuOpt').css({
@@ -172,7 +177,7 @@ $('#map-run').ready(() => {
         
         if ($('#' + checkBoxe + ':checked').val()){
 
-            let check = getOptQuery(checkBoxe)
+            let check = getOptJQuery(checkBoxe)
             
             configOpt(check)            
 
@@ -184,25 +189,20 @@ $('#map-run').ready(() => {
 
                 $('#' + this.getAttribute('id')).prop("checked", false)
 
-                setOpt.push(getOptQuery(this.getAttribute('id')))   
+                setOpt.push(getOptJQuery(this.getAttribute('id')))   
                 console.log(this.getAttribute('id'))
             }
 
             clearMap(setOpt)
         })
-
-    }).on('click', function (event) {
-       /* 
-       problema com a propagação do click - ex. two followed clicks
-       event.stopPropagation()
-        stop(event)
-        event.stopImmediatePropagation() */
     })
 
-    function getOptQuery(element) {
+    /* set opt by selection JQuery code insert */
+    function getOptJQuery(element) {
         return element.replace('menuOpt-', '')
     }
 
+    /* set map as opt selected */
     function configOpt(check){
         console.log(check)
 
@@ -211,8 +211,11 @@ $('#map-run').ready(() => {
             if (check == find)
                 selectedOpt = opt[find]
 
-        if (selectedOpt == opt.MOVE)
-            getMove()
+        if (selectedOpt == opt.DRAW)
+            setPointsMap()
+
+        /* if (selectedOpt == opt.MOVE)
+            getMove() */
         
         if (selectedOpt == opt.MARKER)
             getMarkers()
@@ -237,8 +240,8 @@ $('#map-run').ready(() => {
         return method(lat, lng)
     }
 
-    /* event when mouse clicked (drawing..) */
-    map.on('mousedown', (event) => {
+    /* event when mouse clicked map ( on drawing...) */
+    map.on('click', (event) => {
 
         if (selectedOpt == opt.DRAW){
 
@@ -265,15 +268,13 @@ $('#map-run').ready(() => {
 
 
 
-    /* interpolando click no map */
+    /* interpolando clicks no map - interpolating clicks on map */
     let setPointsMap = () => {
         
         if (points.length > 1)
             
             polylineDraw.add(points)
 
-        if (points.length > 10)
-        
         return polylineDraw.get
     }
 
@@ -285,15 +286,18 @@ $('#map-run').ready(() => {
     })
 
     /* events on move -> show the movement of "boi" */
-    let getMove = () => {
-        polylineMove.add(moveAtTime)
+    let getMove = (points) => {
+        polylineMove.add(points)
+        console.log('selecionou move.. ')  
     }
 
+    /* show markers on map */
     let getMarkers = () => {
         polylineMarker.add(escobar_)
         console.log('selecionou markers.. ')        
     }
 
+    /* by ids of optSetClear remove views on map */
     function clearMap(optSetClear) {
 
         if (!opt)
@@ -311,15 +315,62 @@ $('#map-run').ready(() => {
         }
     }
 
+    $('#one-point-add').on('click', function () {
+        
+        if (selectedOpt == opt.MOVE){
+            let value = $('.btn-add-el .value').text()
+            $('.btn-add-el .value').text(++value)            
+        }
+    })
+
+    $('#one-point-sub').on('click', function () {
+        
+        if (selectedOpt == opt.MOVE){
+            let value = $('.btn-add-el .value').text()
+            $('.btn-add-el .value').text(--value)            
+        }
+    })
+
+    let coordShow = []
+
+    $('#add').on('click', function () {
+
+        if (selectedOpt == opt.MOVE){        
+            let value = Number($('.btn-add-el .value').text())
+            
+            let tam = coordShow.length
+
+            if ((tam + value) <= moveAtTime.length)
+            for (i = tam; i < tam + value; i ++){
+               
+                coordShow.push(moveAtTime[i])
+            }
+
+            /* falta arrumar quando esta alto valor (ex. 4) e restam 2 elementos 
+            estes não carregam */
+            
+            getMove(coordShow)
+        }
+    })
+
+/*        ---  ||      testes      ||   ---     */
+
     $('.teste').on('click', function () {
         console.log('teste ..')
         cl()
     })
 
+
     function cl () {
         if (polylineMove.get())
             polylineMove.remove() 
+        
+        /* não está removendo DRAW - insn't removing DRAW */
+        if (polylineDraw.get())
+            polylineDraw.remove()
     }
+
+/*        ---  ||      fim testes       ||  ---     */
 
     /* events on click of keyboards */
 
