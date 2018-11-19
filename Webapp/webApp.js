@@ -17,8 +17,14 @@ main.set('views', path.join(__dirname, 'views'))
     just:
     href="'name-file-css'.css"
 */
+
+main.use(express.static(__dirname + '/public'))
 main.use(express.static('public/css'))
 main.use(express.static('public/js'))
+/*
+main.use(express.static('public/includes'))
+main.use(express.static('public/images'))
+*/
 main.use('/jquery', express.static(path.join(__dirname, 'node_modules/jquery/dist/')));
 
 /* Routes */

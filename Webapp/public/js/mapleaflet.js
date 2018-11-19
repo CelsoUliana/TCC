@@ -92,7 +92,7 @@ $('#map-run').ready(() => {
     let opt = { 
         DRAW:      { desc: 'desenhar area',     state: true,     elements: {polyline: polylineDraw} }, 
         MOVE:      { desc: 'movimentação',      state: false,    elements: {polyline: polylineMove} }, 
-        MARKER:    {desc: 'marcador',           state: false,    elements: {polyline: polylineMarker}}
+        MARKER:    { desc: 'marcador',          state: false,    elements: {polyline: polylineMarker}}
     }
 
     /* set draw as default */

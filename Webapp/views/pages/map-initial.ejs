@@ -1,22 +1,27 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <link rel="stylesheet" type="text/css" href="map-initial-style.css"/>
+    <head>
+        <link rel="stylesheet" type="text/css" href="css/page.css"/>
+        <% include ../compartilhados/inclui %>
+        <link rel="stylesheet" type="text/css" href="map-initial-style.css"/>
 
-    <link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.2.0/css/ol.css" type="text/css">
-    <style>
-      .map {
-        height: 400px;
-        width: 100%;
-      }
-    </style>
-    <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.2.0/build/ol.js"></script>
-    <title>OpenLayers example</title>
-  </head>
-  <body>
-    <h2>My Map<br></h2>
-    <div id="map" class="map">
-        <script type="text/javascript" src="control-initial-map.js"></script>
-    </div>
+        <link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.2.0/css/ol.css" type="text/css">
+        <style>
+            .map {
+                height: 400px;
+                width: 100%;
+            }
+        </style>
+        <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.2.0/build/ol.js"></script>
+        <title>OpenLayers example</title>
+    </head>
+    <body>
+        <!-- para navegalibidade -->
+        <%- include ../compartilhados/navegacao %>
+        <link rel="stylesheet" href="css/page.css">
+        <h2>My Map<br></h2>
+        <div id="map" class="map">
+            <script type="text/javascript" src="control-initial-map.js"></script>
+        </div>
   </body>
 </html>
