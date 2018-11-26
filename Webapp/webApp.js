@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express')
-
+const fs = require('fs')
 const path = require('path')
 
 const main = express()
@@ -21,11 +21,12 @@ main.set('views', path.join(__dirname, 'views'))
 main.use(express.static(__dirname + '/public'))
 main.use(express.static('public/css'))
 main.use(express.static('public/js'))
+main.use(express.static('public/json'))
 /*
 main.use(express.static('public/includes'))
 main.use(express.static('public/images'))
 */
-main.use('/jquery', express.static(path.join(__dirname, 'node_modules/jquery/dist/')));
+main.use('/jquery', express.static(path.join(__dirname, 'node_modules/jquery/dist/')))
 
 /* Routes */
 main.get('/', (req, res) => {
@@ -33,7 +34,7 @@ main.get('/', (req, res) => {
 })
 
 main.get('/mapinitial', (req, res) => {
-    res.render('pages/map-initial')
+    res.render('pages/mapa_op')
 })
 
 main.get('/page2', (req, res) => {
@@ -43,6 +44,26 @@ main.get('/page2', (req, res) => {
 main.get('/map1', (req, res) => {
     res.render('pages/mapleaflet')
 })
+
+main.get('/api/json', (req, res) => {
+    const data = path.join(__dirname, '/public/json/pontos.json')
+    console.log(data)
+    res.sendFile(data)
+})
+
+main.get('/api/geojson', (req, res) => {
+    const data = path.join(__dirname, '/public/json/geojson.json')
+    console.log(data)
+    res.sendFile(data)
+})
+
+main.use('/api', express.static('api') , function(req, res){
+    // Optional 404 handler
+    res.status(404);
+    res.json({error:{code:404}})
+});
+
+
 
 /* listen port */
 main.listen(8080, () => {

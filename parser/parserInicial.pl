@@ -25,7 +25,6 @@ while(<CSV>){
 
 close CSV;
 
-
 foreach my $key (keys %dataHash){
 	print "$key\n";
 }
