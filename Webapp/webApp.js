@@ -3,6 +3,7 @@
 const express = require('express')
 const fs = require('fs')
 const path = require('path')
+
 const main = express()
 
 const bodyParser = require('body-parser');
@@ -61,6 +62,47 @@ main.get('/api/geojson', (req, res) => {
     console.log(data)
     res.sendFile(data)
 })
+
+/* ------------------------ mexi aqui (apaga depois essa linha) --------------------------------- */
+
+/* criei a page postJson - dá uma olhada
+
+rota para a página page/postJson. ->  [localhost:8080/postJson] */
+main.get('/postJson', (req, res) => {
+    res.render('pages/postJson')
+})
+
+/* pelo que entendi body é quem garante o processo de envio do post. O express então captura o post
+e chama o body-parser pra saber o conteudo de 'req' ( body- parser é tipo um container), o express não 
+sabe qual o conteudo, apenas o body
+n sei se tem como fazer req.body.(var) visto que o body é todo o conteudo da requisição do cliente */
+
+main.post('/post', (req, res) => {
+
+    /* 'let json_require' recebe o json/chave da outra pagina, faça o que quiser com o valor
+    - salve em um arquivo, caso seja um json : use require('fs')
+    - pegue o json correspondente a chave, caso json_require' seja chave, e envie de volta (use require 
+    pro js que tem a função de get() desse json)
+    - ou inventa algo com o que veio do cliente side */
+     
+    let json_require = req.body     // recebe a informação do cliente side e salva em json_require
+    /* let json_require = JSON.stringify(req.body) - vira texto */
+
+    /* 
+    enviar seu json com a chave json_require
+    let sua_var_que_aloca_json = get(seu_json_servidor_local)
+    - use 'res.json(sua_var_que_aloca_json)' para enviar JSON para a pessoa que fez a requisição via chave
+    NOTE: res.'json' <- transfere json
+    */
+    
+    //enviando de volta o json que recebi 
+    res.json(json_require)      // abra F12 em localhost:8080/teste pra ver o objeto do json
+
+    //abaixo imprime no lado do servidor
+    console.log(JSON.stringify(req.body))
+})
+
+/* ------------------------ mexi até aqui (apaga depois essa linha) --------------------------------- */
 
 main.post('/api/generateJson', (req, res) => {
     console.log(req.body)

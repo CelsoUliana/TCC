@@ -57,7 +57,7 @@ $('#map-run').ready(() => {
 
     /* rum map */
     let map = L.map('map-run', {
-        center:             escobar,
+        center:             embrapa,
         zoom:               zoomControl,
         layers:             [maptileLayer],
         doubleClickZoom:    false
@@ -74,7 +74,7 @@ $('#map-run').ready(() => {
                 
                 points.push(array)
                 
-                id = L.polyline(array, {
+                id = L.polyline(points, {
                     color: 'red',      
                 }).addTo(map)
             },
@@ -341,10 +341,9 @@ $('#map-run').ready(() => {
             let tam = coordShow.length
 
             if ((tam + value) <= moveAtTime.length)
-            for (i = tam; i < tam + value; i ++){
-               
-                coordShow.push(moveAtTime[i])
-            }
+            
+                for (i = tam; i < tam + value; i ++)
+                    coordShow.push(moveAtTime[i])                
 
             /* falta arrumar quando esta alto valor (ex. 4) e restam 2 elementos 
             estes não carregam */
