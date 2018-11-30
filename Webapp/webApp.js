@@ -3,13 +3,18 @@
 const express = require('express')
 const fs = require('fs')
 const path = require('path')
-
 const main = express()
+
+const bodyParser = require('body-parser');
 
 console.log(__dirname)
 
 main.set('view engine', 'ejs')
 main.set('views', path.join(__dirname, 'views'))
+
+main.use(bodyParser.json()); // for parsing application/json
+main.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+
 
 /*
     settings to static diretories. isn't necessary in .ejs file use href as:
@@ -55,6 +60,12 @@ main.get('/api/geojson', (req, res) => {
     const data = path.join(__dirname, '/public/json/geojson.json')
     console.log(data)
     res.sendFile(data)
+})
+
+main.post('/api/generateJson', (req, res) => {
+    console.log(req.body)
+    //res.send(req.body.arroz)
+    console.log('hello')
 })
 
 main.use('/api', express.static('api') , function(req, res){

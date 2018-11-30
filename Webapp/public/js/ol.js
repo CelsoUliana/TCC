@@ -1,7 +1,6 @@
 var map
 
 
-
 /* Adiciona mapa base do OSM */
 var baseLayer = new ol.layer.Tile({
 	source : new ol.source.OSM()
@@ -31,12 +30,12 @@ var pointsLayer = new ol.layer.Vector({
 var JsonSource = new ol.source.Vector({
     url: '/api/geojson',
     format: new ol.format.GeoJSON()
-});
+})
 
 /* Adiciona a fonte de dados que foi pega da API e cria uma layer com ela. */
 var JsonLayer = new ol.layer.Vector({
     source: JsonSource,
-  });
+})
 
 /* Inicializa o mapa map */
 function init(){
@@ -131,7 +130,37 @@ draw.on('drawend', (event) => {
 	}
     
     console.log(draw)
-	
+
+    /*const data = JSON.stringify({
+        todo: Array
+    })
+
+    const options = {
+        hostname: '/',
+        port: 8080,
+        path: '/api/generateJson',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': data.length
+        }
+    }
+
+    const req = https.request(options, (res) => {
+        console.log(`statusCode: ${res.statusCode}`)
+      
+        res.on('data', (d) => {
+            process.stdout.write(d)
+        })
+    })
+
+    req.on('error', (error) => {
+        console.error(error)
+    })
+      
+    req.write(data)
+    req.end()
+	*/ // Nao funciona
 })
 
 
