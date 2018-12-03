@@ -129,7 +129,45 @@ draw.on('drawend', (event) => {
 		}
 	}
     
-    console.log(draw)
+    var coord = []
+    var template = '[{x}, {y}]'
+    features.forEach((feature) => {
+        //console.log(feature.getGeometry().getCoordinates())
+        coord.push(feature.getGeometry().getCoordinates())
+    })
+
+/*
+    console.log(coord)
+    var out = ol.coordinate.format(coord[0], template, 2)
+    console.log(out)
+    */
+/*
+ {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[-5e6, -1e6], [-4e6, 1e6], [-3e6, -1e6]]]
+      }
+
+*/
+
+
+    var stringifiedData = {
+        type : "Feature",
+        "geometry" : {
+            type: "Polygon",
+            coordinates: coord[0]
+        }
+    }
+
+    //console.log(stringifiedData.geometry.coordinates)
+
+    var writer = new ol.format.GeoJSON()
+    var geoJsonData = writer.writeFeaturesObject(features)
+    console.log((geoJsonData))
+
+    //sendJSON(stringifiedData)
+    sendJSON(geoJsonData)
 
     /*const data = JSON.stringify({
         todo: Array
@@ -162,6 +200,33 @@ draw.on('drawend', (event) => {
     req.end()
 	*/ // Nao funciona
 })
+
+var sendJSON = (dataToStringify) => {
+
+    //console.log(dataToStringify)
+
+    $.ajax({
+
+        type: "POST",
+        url: 'http://localhost:8080/api/appendJson', 
+        
+        data: dataToStringify,
+
+        success: (data) => {
+
+            /*  caso o outro lado (servidor) receba a mensagem, ele retorna um 'data' faça o 
+            que quiser com esse 'data' */
+            
+            console.log(data)
+
+            $('p').text(JSON.stringify(data))
+        },
+
+        error(XMLHttpRequest, textStatus, errorThrown) {
+            //code to handle errors
+        }
+    });
+} 
 
 
 /* Modifica poligonos existentes */

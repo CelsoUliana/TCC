@@ -3,7 +3,7 @@
 const express = require('express')
 const fs = require('fs')
 const path = require('path')
-
+const geojson = require('./public/json/geojson.json')
 const main = express()
 
 const bodyParser = require('body-parser');
@@ -104,10 +104,30 @@ main.post('/post', (req, res) => {
 
 /* ------------------------ mexi até aqui (apaga depois essa linha) --------------------------------- */
 
-main.post('/api/generateJson', (req, res) => {
+//quase 
+main.post('/api/appendJson', (req, res) => {
     console.log(req.body)
-    //res.send(req.body.arroz)
-    console.log('hello')
+    //res.send(req.body.geometry.coordinates)
+
+    /*req.body.geometry.coordinates.forEach(element => {
+        console.log(element)
+    })*/
+
+    //geojson.features.push(req.body)
+
+    //req.body.forEach(element => {
+   //     console.log(element) 
+   // });
+
+    console.log(geojson)
+
+    /*fs.writeFileSync('./public/json/geojson.json', JSON.stringify(geojson), function(err) {
+        if (err) throw err;
+        console.log('complete');   
+    })*/
+
+    res.send(req.body)
+    //res.send(geojson)
 })
 
 main.use('/api', express.static('api') , function(req, res){
