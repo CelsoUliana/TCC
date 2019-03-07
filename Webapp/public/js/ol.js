@@ -48,7 +48,7 @@ function init(){
     
 	map.addLayer(baseLayer) // Adiciona o mapa base como layer base
     map.addLayer(pointsLayer) // Adiciona os pontos base.
-    map.addLayer(JsonLayer) // Adiciona tentativa de exportação
+    //map.addLayer(JsonLayer) // Adiciona tentativa de exportação
 }
 
 init() // Chama a inicialização

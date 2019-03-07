@@ -52,7 +52,7 @@ main.get('/map1', (req, res) => {
 })
 
 main.get('/api/json', (req, res) => {
-    const data = path.join(__dirname, '/public/json/pontos.json')
+    const data = path.join(__dirname, '/public/json/geojsontest.json')
     console.log(data)
     res.sendFile(data)
 })
