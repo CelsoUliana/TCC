@@ -74,8 +74,7 @@ main.get('/postJson', (req, res) => {
 
 /* pelo que entendi body é quem garante o processo de envio do post. O express então captura o post
 e chama o body-parser pra saber o conteudo de 'req' ( body- parser é tipo um container), o express não 
-sabe qual o conteudo, apenas o body
-n sei se tem como fazer req.body.(var) visto que o body é todo o conteudo da requisição do cliente */
+sabe qual o conteudo, apenas o body */
 
 main.post('/post', (req, res) => {
 
@@ -84,7 +83,7 @@ main.post('/post', (req, res) => {
     - pegue o json correspondente a chave, caso json_require' seja chave, e envie de volta (use require 
     pro js que tem a função de get() desse json)
     - ou inventa algo com o que veio do cliente side */
-     
+
     let json_require = req.body     // recebe a informação do cliente side e salva em json_require
     /* let json_require = JSON.stringify(req.body) - vira texto */
 
@@ -94,7 +93,7 @@ main.post('/post', (req, res) => {
     - use 'res.json(sua_var_que_aloca_json)' para enviar JSON para a pessoa que fez a requisição via chave
     NOTE: res.'json' <- transfere json
     */
-    
+
     //enviando de volta o json que recebi 
     res.json(json_require)      // abra F12 em localhost:8080/teste pra ver o objeto do json
 
@@ -106,19 +105,29 @@ main.post('/post', (req, res) => {
 
 //quase 
 main.post('/api/appendJson', (req, res) => {
-    console.log(req.body)
-    //res.send(req.body.geometry.coordinates)
 
-    /*req.body.geometry.coordinates.forEach(element => {
-        console.log(element)
-    })*/
+    /* A estrutura do geoJson segue o padrão de equivalência body ('api/appendJson') = dataToStringfy 
+    (ol.js) logo: 
 
-    //geojson.features.push(req.body)
+        body:
+            features:
+                array: [] (array)
+                    geometry: 
+                        coordinates: [] (array de 2 pos)
+                        type:
+                        _proto_:
+                    properties:
+                    type:
+            type:
+            _proto_: */
 
-    //req.body.forEach(element => {
-   //     console.log(element) 
-   // });
+    console.log('\n # ----- begin body -----_#\n')
+    console.log(req.body.features.forEach(element => {
+        console.log(element.geometry.coordinates)
+    }))   
+    console.log('\n # ----- end body -----_#\n')
 
+    // esse cara é la de cima
     console.log(geojson)
 
     /*fs.writeFileSync('./public/json/geojson.json', JSON.stringify(geojson), function(err) {
@@ -130,16 +139,16 @@ main.post('/api/appendJson', (req, res) => {
     //res.send(geojson)
 })
 
-main.use('/api', express.static('api') , function(req, res){
+main.use('/api', express.static('api'), function (req, res) {
     // Optional 404 handler
     res.status(404);
-    res.json({error:{code:404}})
+    res.json({ error: { code: 404 } })
 });
 
 
 
 /* listen port */
 main.listen(8080, () => {
-    console.log ('server rodando')
+    console.log('server rodando')
 })
 

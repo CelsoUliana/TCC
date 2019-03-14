@@ -132,7 +132,7 @@ draw.on('drawend', (event) => {
     var coord = []
     var template = '[{x}, {y}]'
     features.forEach((feature) => {
-        //console.log(feature.getGeometry().getCoordinates())
+        console.log('estoy here ' + feature.getGeometry().getCoordinates())
         coord.push(feature.getGeometry().getCoordinates())
     })
 
@@ -164,7 +164,7 @@ draw.on('drawend', (event) => {
 
     var writer = new ol.format.GeoJSON()
     var geoJsonData = writer.writeFeaturesObject(features)
-    console.log((geoJsonData))
+    console.log('geoJsonData -> ' + geoJsonData)
 
     //sendJSON(stringifiedData)
     sendJSON(geoJsonData)
@@ -203,7 +203,7 @@ draw.on('drawend', (event) => {
 
 var sendJSON = (dataToStringify) => {
 
-    //console.log(dataToStringify)
+    console.log(dataToStringify)
 
     $.ajax({
 
@@ -212,14 +212,15 @@ var sendJSON = (dataToStringify) => {
         
         data: dataToStringify,
 
-        success: (data) => {
+        success: (data2) => {
 
             /*  caso o outro lado (servidor) receba a mensagem, ele retorna um 'data' faça o 
             que quiser com esse 'data' */
             
-            console.log(data)
+            console.log('data2 --> ' + JSON.stringify(data2))
+            console.log(data2)
 
-            $('p').text(JSON.stringify(data))
+            //$('p').text(JSON.stringify(data))
         },
 
         error(XMLHttpRequest, textStatus, errorThrown) {
