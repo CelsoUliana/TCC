@@ -34,7 +34,7 @@ open(my $fh, '>', $geojsonFileName) or die "Could not open file '$geojsonFileNam
 
 print $fh "{\n\t\"type\":\"FeatureCollection\",\n\t\"crs\": {\n\t\t\"type\": \"name\",\n\t\t\"properties\": {\n\t\t\t\"name\": \"EPSG:3857\"\n\t\t}\n\t},\n\t\"features\": [";
 
-foreach my $key ( sort { $dataHash{$b} <=> $dataHash{$a}} keys %dataHash){
+foreach my $key ( sort { $b <=> $a} keys %dataHash){
 	print $fh "$dataHash{$key}";
 }
 
