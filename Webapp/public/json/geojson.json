@@ -3,7 +3,6 @@
     "crs": {
       "type": "name",
       "properties": {
-        "name": "EPSG:3857"
       }
     },
     "features": [{
@@ -19,6 +18,19 @@
         "coordinates": [[4e6, -2e6], [8e6, 2e6]]
       }
     }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "color": "red",
+        "coordinates": [[-20.44, -54.72], [-30.45, -54.72]]
+      }
+    }, {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[-40, 50], [60, -2e7]]
+      }
+    },{
       "type": "Feature",
       "geometry": {
         "type": "LineString",
@@ -46,7 +58,7 @@
       "geometry": {
         "type": "MultiPolygon",
         "coordinates": [
-          [[[-5e6, 6e6], [-5e6, 8e6], [-3e6, 8e6], [-3e6, 6e6]]],
+          [[[-24.5, 50.5], [-5e6, 8e6], [-3e6, 8e6], [-3e6, 6e6]]],
           [[[-2e6, 6e6], [-2e6, 8e6], [0, 8e6], [0, 6e6]]],
           [[[1e6, 6e6], [1e6, 8e6], [3e6, 8e6], [3e6, 6e6]]]
         ]

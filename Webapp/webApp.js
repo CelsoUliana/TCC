@@ -58,6 +58,7 @@ main.get('/api/json', (req, res) => {
 })
 
 main.get('/api/geojson', (req, res) => {
+    //const data = path.join(__dirname, '/public/json/geojson.json')
     const data = path.join(__dirname, '/public/json/geojson.json')
     console.log(data)
     res.sendFile(data)
@@ -119,7 +120,7 @@ main.post('/api/appendJson', (req, res) => {
                     properties:
                     type:
             type:
-            _proto_: */
+            _proto_: */ 
 
     console.log('\n # ----- begin body -----_#\n')
     console.log(req.body.features.forEach(element => {
@@ -134,6 +135,7 @@ main.post('/api/appendJson', (req, res) => {
         if (err) throw err;
         console.log('complete');   
     })*/
+
 
     res.send(req.body)
     //res.send(geojson)
