@@ -2,8 +2,7 @@
     "type": "FeatureCollection",
     "crs": {
       "type": "name",
-      "properties": {
-      }
+      "properties": {}
     },
     "features": [{
       "type": "Feature",

@@ -8,8 +8,8 @@ var baseLayer = new ol.layer.Tile({
 
 /* Adiciona uma view */
 var view = new ol.View({
-    //projection: 'EPSG:900913', // projeção padrão
-    center: ol.proj.fromLonLat([-20.72272, -50.44298]),  // centro do mapa quando renderiza
+    //projection: 'EPSG:3857', // projeção padrão
+    center: ol.proj.fromLonLat([-54.718803, -20.447947], 'EPSG:3857'),  // centro do mapa quando renderiza
     zoom: 2, // nivel de zoom quando renderiza
 })
 
@@ -22,6 +22,25 @@ var pointsLayer = new ol.layer.Vector({
         format: new ol.format.GeoJSON()
     })
 })
+
+/* queria saber como o pointsLayer vinha para cá logo tentei: */
+console.log('aqui');
+console.log(pointsLayer.getSource().getFeatures().length);
+
+/* BUT, o problema é que ao fazer isto o vetor não foi carregado ainda por ser 
+asynchronous logo vi: */ 
+pointsLayer.getSource().on('change', function(evt){
+    var source = evt.target;
+    if (source.getState() === 'ready') {
+      let features = source.getFeatures();
+      console.log('feat source: ');
+      console.log(features)
+      
+      console.log(features[0].getGeometry().getCoordinates())
+      console.log(features[0].getGeometry().getType())
+      
+    }
+  });
 
 /*var geoPointsLayer = new ol.source.VectorSource({
     features: (new ol.format.GeoJSON()).readFeatures('/api/geojson')
@@ -50,7 +69,7 @@ function init() {
     })
 
     map.addLayer(baseLayer) // Adiciona o mapa base como layer base
-    //map.addLayer(pointsLayer) // Adiciona os pontos base.
+    map.addLayer(pointsLayer) // Adiciona os pontos base.
     map.addLayer(JsonLayer) // Adiciona tentativa de exportação
 }
 
@@ -75,6 +94,7 @@ var drawingSource = new ol.source.Vector({
 
 /* Adiciona o layer do desenho */
 var drawingLayer = new ol.layer.Vector({
+    projection: view.getProjection(),
     source: drawingSource
 })
 map.addLayer(drawingLayer)
@@ -87,6 +107,7 @@ var listener
 
 // As interações do desenho
 draw = new ol.interaction.Draw({
+    projection: view.getProjection(),
     source: drawingSource,
     type: 'Polygon', // Tipo de desenho poligono
     //only draw when Ctrl is pressed.
@@ -160,12 +181,58 @@ draw.on('drawend', (event) => {
 
     /* recebe do evento 'event' os click na tela: não sei o porquê de vir 4 ao inves de 3.
     Temos que investigar isto depois */
-    var polygon = new ol.geom.Polygon(event.feature.getGeometry().getCoordinates())
+    let coordinatesFromMap = event.feature.getGeometry().getCoordinates();
+
+    let coordinatesProjectionMercatorFromMap = new Array();
+    
+    coordinatesFromMap.forEach(element => {
+        
+        let coordinatesToParse = new Array();
+
+        element.forEach(elementArrayInternal => {
+            coordinatesToParse.push(ol.proj.toLonLat(elementArrayInternal, 'EPSG:3857'))
+        });
+
+        coordinatesProjectionMercatorFromMap.push(coordinatesToParse);
+    });
+
+    /* ---------------------------------------------------------------------------------------     
+                -- TESTING NEW ARRAY ACIMA
+
+    let coordi = [-5596413.4629274625, -1839380.6486544814];
+    coordi = ol.proj.toLonLat(coordi, 'EPSG:3857')
+    
+    console.log('--------------------------------------------------------------->');
+    console.log(coordi);
+    console.log('--------------------------------------------------------------->');
+
+    console.log('--------------------- bp -------------------');
+
+    console.log(coordinatesProjectionMercatorFromMap);
+    console.log('--------------------- bp -------------------');
+     --------------------------------------------------------------------------------------------
+    */
+
+    var polygon = new ol.geom.Polygon(coordinatesProjectionMercatorFromMap)
 
     let features = new ol.Feature({
         geometry: polygon
     })
 
+    
+    /*problem with projection:
+    
+    toLonLat        emite da latitude longitude para a nova projection
+    fromLonLat      do contrario
+    
+    projection mais usadas  4326 -> 
+                            3857 -> Mercator
+
+                            ol.proj.format('{x}, {y}', n) n -> casas decimais 
+                            
+                            */
+
+    
     drawingLayer.getSource().addFeature(features)
    
 /*     

@@ -7,6 +7,7 @@ const geojson = require('./public/json/geojson.json')
 const main = express()
 
 const bodyParser = require('body-parser');
+const DIR_JSON = __dirname + '/public/json/newJson.json'
 
 console.log(__dirname)
 
@@ -53,14 +54,16 @@ main.get('/map1', (req, res) => {
 
 main.get('/api/json', (req, res) => {
     const data = path.join(__dirname, '/public/json/geojsontest.json')
-    console.log(data)
+    //console.log(data)
     res.sendFile(data)
 })
 
 main.get('/api/geojson', (req, res) => {
     //const data = path.join(__dirname, '/public/json/geojson.json')
-    const data = path.join(__dirname, '/public/json/geojson.json')
+    const data = path.join(__dirname, '/public/json/toTest.json')
+    console.log('here');
     console.log(data)
+    console.log('----- pass');
     res.sendFile(data)
 })
 
@@ -122,14 +125,49 @@ main.post('/api/appendJson', (req, res) => {
             type:
             _proto_: */ 
 
+    // Ainda possui o problema das coordenadas não estarem vindo de acordo com o que deveria vir
+
     console.log('\n # ----- begin body -----_#\n')
     console.log(req.body.features.forEach(element => {
         console.log(element.geometry.coordinates)
     }))   
     console.log('\n # ----- end body -----_#\n')
 
-    // esse cara é la de cima
-    console.log(geojson)
+    console.log(req.body)
+
+
+    /*      --DESCOMENTE SE QUISER VER OS DADOS SENDO SALVOS  
+    escreve o arquivo JSON --> mellhora mais pra frente para fazer append e gerar por usuario */
+    /* ESTA ---> */   //writeFile(DIR_JSON, req.body)
+
+    /*
+        WESLEY: O retorno do cliente está vindo certo e se upado sem as " ele upa pro mapa
+        corretamente. Se tentando o arquivo do modo como é recebido servidor e salvo não está 
+        upando ainda.
+
+        Fica na parte de coordenadas da seguinte forma que se segue:
+
+        "coordinates":[[
+            [ '-54.50660705566407', '-20.3678024183598' ],
+            [ '-54.190750122070305', '-20.730428476781327' ],
+            [ '-54.259414672851555', '-20.29955357220807' ],
+            [ '-54.50660705566407', '-20.3678024183598' ] ]
+
+        As aspas em "-54.73594665527343" devem estar atrapahando na hora de enviar pro mapa
+
+        Deveria ser algo como:
+
+        "coordinates":[[
+            [-54.50660705566407,-20.3678024183598],
+            [-54.190750122070305,-20.730428476781327],
+            [-54.259414672851555,-20.29955357220807],
+            [-54.50660705566407,-20.3678024183598]]]
+        
+        Se o dado recebido no cliente - oj.js - ser feito um parser pode funcionar. Ou salvar
+        corretamente no servidor.
+    */
+    
+    //----------------------------------------------------------------------
 
     /*fs.writeFileSync('./public/json/geojson.json', JSON.stringify(geojson), function(err) {
         if (err) throw err;
@@ -154,3 +192,13 @@ main.listen(8080, () => {
     console.log('server rodando')
 })
 
+
+function writeFile (path, json) {
+    fs.writeFileSync(path, JSON.stringify(json));
+}
+
+
+                     let vect =   [[ -54.492187500000014, 11.523087506868507 ],
+                        [ -38.671875000000014, -9.795677582829725 ],
+                        [ -38.671875000000014, 15.623036831528267 ],
+                        [ -54.492187500000014, 11.523087506868507 ]]
