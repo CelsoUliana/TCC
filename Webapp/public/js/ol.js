@@ -13,7 +13,6 @@ var view = new ol.View({
     zoom: 2, // nivel de zoom quando renderiza
 })
 
-
 /* Adiciona uma layer de pontos(Vector) alimentada de uma API json*/
 var pointsLayer = new ol.layer.Vector({
     title: 'random points',

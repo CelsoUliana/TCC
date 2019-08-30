@@ -1,0 +1,231 @@
+Para nomes:
+
+Coisas com Embrapa cattle plot 360
+
+dá pra usar combinações disto
+idéias como Empbrapa360 EmbrapaPlot
+
+Com a professora:
+
+--> Ver PWA (o Camilo tem que passar o projeto correto pra gente)
+
+--> Falar Raspberry que não tem micro SD > Sem SO > Sem Aplicação e-cattle
+
+--> objetivo macro: desgaste de pastagem e temperatura 
+
+
+Entre a gente: 
+
+A gente vai ter que readaptar o que projetamos para o PWA
+
+Terminar o script do openLayers:
+    -> gerar dados e exportar (problema com Features na criação do JSON)
+    -> inserir os dados 
+
+Estudar PWA
+
+
+cattleRun 
+catle360
+Empbrapa360
+EmblapaPlot
+pasturePlot
+cattlePlot
+
+lib chart project TCC
+https://www.sitepoint.com/best-javascript-charting-libraries/
+
+estudo Docker
+https://www.youtube.com/watch?v=h0NCZbHjIpY&list=PL9ooVrP1hQOHUKuqGuiWLQoJ-LD25KxI5
+
+livo do openlayers
+https://www.amazon.com.br/OpenLayers-3-Beginners-Guide-English-ebook/dp/B00T7D33BY
+
+codigos do livro acima
+http://openlayersbook.github.io/ch11-creating-web-map-apps/example-03.html
+
+pi
+https://www.balena.io/blog/deploy-network-wide-ad-blocking-with-pi-hole-and-a-raspberry-pi/?utm_source=efp&utm_medium=etcher&utm_campaign=balena-pihole&utm_content=v1
+https://projects.raspberrypi.org/en/projects/raspberry-pi-setting-up/2
+
+diff between coordinates
+https://gis.stackexchange.com/questions/3334/difference-between-wgs84-and-epsg4326
+http://lyzidiamond.com/posts/4326-vs-3857
+
+
+##=============================================================================================
+##                      Instalação do e-cattle                                              ###
+##=============================================================================================
+
+
+#   A parte após o core e tools do mongodb não está funcionando no tutorial do bruno. Pegamos do
+    tutorial oficial do link que o bruno deixou. Parte dos binarios. 
+
+#   extrair os binarios das pastas core e tools juntos na mesma pasta para extrair com o comando passado.
+
+#   Em "criar um .service em systemmd/System/"  --> tem que ser mongodb.service já que ele utiliza
+    a frente isto. 
+
+#   O tutorial que o bruno passou em referencia no inicio refere-se ao node v8.14.*, but a frente no 
+    tutorial ele usa um curl que é da versão 10.* o que fez nos obrigou a fazer um upgrade depois para 
+    esta nova versão (serviço em dobro).
+
+#   falar do uso do sudo nas pastas
+    principalmente com npm --> sudo npm install (exemplo)
+
+#   Não é necessário criar chave ssh para clonar um repositório do github ele passou um link
+    *** Deu skip em duas depedencias uma era fsevents e não lembro a outra - talvez seja pela 
+    falta do "usuário 
+
+#   seção instalar o git é incoerente 
+    Seria mais interessante como "configurar o git"
+
+#   Em "Para criar o arquivo ecattle.service" 
+    O service é criado em uma pasta /etc/.../ecattle.service
+    e na hora das permissões o caminho está em /lib/.../x
+    Nesta pasta não existe o arquivo ecattle.service para dar as permissões necessarias
+
+#   A gente optou por fazer na pasta inicial /etc/ sem saber se realmente é esta
+
+#   Podia ter deixado um link pro Docker
+
+#   Docker foi poblematico
+    pip version e afins
+    
+##=============================================================================================
+
+--> Usar TCC está função para fazer no padrão RESTFULL
+
+app.route('/book')
+  .get(function(req, res) {
+    res.send('Get a random book');
+  })
+  .post(function(req, res) {
+    res.send('Add a book');
+  })
+  .put(function(req, res) {
+    res.send('Update the book');
+  });
+
+
+
+Para reunião -> quinta feira
+
+NÂO ESQUECER DE PERGUNTAR
+
+curiosidade: questão de literaturas. Como procurar? (uso do site da embrapa e do google academico,
+existe outro?)
+a parte de criação, ihc, e acompanhamento a professora estará com a gente?
+Aquilo que tinha feito antes.. deixar quieto?
+O que entra escopo nossa aplicação? 
+Professora tem noção de Docker? 
+Questão do dominio? 
+framework aconselhavel
+
+
++=========================================================================================================+
+Apresentar literaturas
+levar impresso os requisitos
+ver próximos passos que a gente deve fazer do e-catle
+--> pedir explicação sobre isto, estamos meio perdido 
++=========================================================================================================+ 
+Ver os requisitos o que será mantido e que entra a mais
++=========================================================================================================+ 
+
+conhecimentos estudados (wesley): 
+node.js base (as funcionalidades de sistema ainda ñão foram aprofundadas pela vastidão de conteudo na internet)
+javascript (boa parte das caracteristicas da linguagem - falta protoype e alguns poucos detalhes)
+--> entendi os callbacks, asyncs, promisses functions fabric and contructor
+express -> estudada sua organização, estou no modelo MVC
+conceitos de prog_web (por mais que seja onde se gasta maior parte do estudo existe muita coisa)
+PWA (nada ainda - precisava do código de exemplo)
+html ok 
+css  ok
+falta parte de IHC, mas antes tem que implementar os requisitos
+--> porem se fizessemos o escopo do prototipo ajudaria mesmo na implementação
+openlayers --> API muito rica e em parte dificil. 
+  - comunicação cliente x servidor ok
+  - enviar dados geoespaciais servidor ok 
+  - receber de uma api do servidor ok 
+  - criar mapas com parametros recebidos de um geoJSON (em parte)
+    --> aqui falta as vezes implementar na mão um verificador se as coordenadas estão ok, tipo problemas com 
+    string (""), se as coordenadas vão se referir a feature de referencia (polygon triangulo tem que ter 4
+    coordenadas e existe um padrão destas coordenadas) - verificar isto. 
+Questão dos requisitos -> Será aquilo mesmo 
+Documentação nada, só comentarios 
+
+
+degradação do solo 
+http://www.record.com.br/images/livros/capitulo_8OYLPG.pdf
+
+literaturas:
+Tem metodologia para analise da pastagem. Uma das mais importantes é o Forrageamento de rebanho 
+Li artigo em relação de gado do pantanal em gramineas nativas
+Mas existe outras variáveis importantes como a própria graminea existente em um perimetro.
+tem as medidas de nitrogenio e outros compostos
+
+Forrageamento é a busca e a exploração de recursos alimentares. É uma habilidade particularmente 
+importante pois afeta a aptidão do animal, influenciando diretamente a sobrevivência e a reprodução 
+do organismo.[1] O forrageamento é estudado pela ecologia comportamental, analisando o comportamento 
+de forrageio dos animais em resposta ao ambiente em que ele vive.
+
+heterogeneidade funcional: comportamento ou processo de pastejo efetuado pelos animais (escala espacial 
+de interesse).
+
+
+palavras-chaves: Forrageamento, degradação, pastagem, qualidade de pastagem, pastejo, heterogeneidade 
+funcional
+
+
+ver Wright e conolly Gordon - ambos 1995
+
+
+O artigo do souza tenta avaliar a qualidade das pastagens do pantanal, usando de uma metodologia explicada
+passo a passo. Em suma tenta fazer uma analise quantitativa e qualitativa da pastagem que envolve varias 
+variaveis como valor nutricional, tamanho, fitofisionomia entre outros caracteristicas. 
+Então souza quis fazer um pararelo com a a forragem do rebanho - capacidade de procura de alimento - avaliando
+os locais(piquetes) que os animais ficavam maior parte do tempo pastando e os patches, locais nesse piquete
+que tiveram maior presença dos mesmos. vale ressaltar que os patches tem relação com a pastagem do local. 
+Chegou-se a conclusão que as pastagens que tinham maior valor nutricional foram as mais comidas. 
+Levou em consideração valores do dia em que 50% dos animais ao menos estivessem pastando, e o periodo da tarde
+foi o periodo de maior importancia por ter maior presença dos animais. 
+Para comprovar avaliou-se a planta fundamentalmente. 
+Tem uma formula maluca que ele usa, pag. 17.
+
+As conclusões foram realizadas nas págs 18 e 19
+Fala de superpastejo ao fim causando degradação. 
+
+Em suma, valor nutricional x forrageamento.
+
+-------------------------------------------------------------------------------------------------------------
+REUNIÂO 
+-------------------------------------------------------------------------------------------------------------
+A professora disse para agrupar funçoes de crud em um crud (gerenciar)
+perfil de usuario 
+
+mobile para aplicação doc
+3 condições de entrada: coordenada colada, file padrão de entrada (array, json, doc, virgula), 
+organizar partes do requisitos em conjuntos 
+
+niveis podem ser em 3 ou em um unico topico
+tile -> portugues
+
+como vai funcionar o carregamento dos dados. uma base. 
+
+fazer o calculo do zoom baseado nas coordenadas da fazenda. 
+
+se clicar num ponto detalhar dados dele (colar)
+
+falar da questão temporal nos requisitos, como definir o tempo. 
+
+parametros -> detalhar que parametros
+
+pode-se fazer subseções para tópicos ou juntar os elementos. 
+
+deixar rnf e rf junto por preferencia da professora. 
+
+não funcional -> 
+
+buscar os dados das coordenadas dos sensores do bigboxx
+
+ajeitar para proxima reunião: requisitos e mockups

@@ -3,7 +3,8 @@
 const express = require('express')
 const fs = require('fs')
 const path = require('path')
-const geojson = require('./public/json/geojson.json')
+const geojson = readJSON('./public/json/newJson.json')
+const geojson2 = require('./public/json/toTest2.json')
 const main = express()
 
 const bodyParser = require('body-parser');
@@ -59,12 +60,16 @@ main.get('/api/json', (req, res) => {
 })
 
 main.get('/api/geojson', (req, res) => {
-    //const data = path.join(__dirname, '/public/json/geojson.json')
-    const data = path.join(__dirname, '/public/json/toTest.json')
+    const pt = path.join(__dirname, '/public/json/newJson.json')
+    /* const data = path.join(__dirname, '/public/json/newJson.json')
+
+    
     console.log('here');
     console.log(data)
-    console.log('----- pass');
-    res.sendFile(data)
+    console.log('----- pass'); */
+    let data = geojson
+    //res.json(data)
+    res.sendFile(pt)
 })
 
 /* ------------------------ mexi aqui (apaga depois essa linha) --------------------------------- */
@@ -138,7 +143,8 @@ main.post('/api/appendJson', (req, res) => {
 
     /*      --DESCOMENTE SE QUISER VER OS DADOS SENDO SALVOS  
     escreve o arquivo JSON --> mellhora mais pra frente para fazer append e gerar por usuario */
-    /* ESTA ---> */   //writeFile(DIR_JSON, req.body)
+    /* ESTA ---> */   
+    writeFile(DIR_JSON, req.body)
 
     /*
         WESLEY: O retorno do cliente está vindo certo e se upado sem as " ele upa pro mapa
@@ -169,10 +175,10 @@ main.post('/api/appendJson', (req, res) => {
     
     //----------------------------------------------------------------------
 
-    /*fs.writeFileSync('./public/json/geojson.json', JSON.stringify(geojson), function(err) {
+    /* fs.writeFileSync('./public/json/geojson.json', JSON.stringify(geojson), function(err) {
         if (err) throw err;
         console.log('complete');   
-    })*/
+    }) */
 
 
     res.send(req.body)
@@ -192,13 +198,57 @@ main.listen(8080, () => {
     console.log('server rodando')
 })
 
+function replacer( key, value ) {
 
-function writeFile (path, json) {
-    fs.writeFileSync(path, JSON.stringify(json));
+    /* let returned = ( value == value * 1 )
+            ? Number(value)
+            : value;
+
+    return returned; */
+    let returned = null
+        if ( value == value * 1 && value != ''){
+            returned = Number(value)
+        }else returned = value
+
+        return returned
+}
+
+async function readJSON(path) {
+    let data = await read(path)
+    /* console.log('data ', data.features[0].geometry.coordinates)
+    console.log('data2 ', data) */
+    return data
+}
+
+async function read(path) {
+    return new Promise((resolve, reject) => {
+        fs.readFile(path, (err, data) => {            
+            resolve(toParse(data))
+        })        
+    })  
+}
+
+async function toParse (data) {
+    return JSON.parse(data, (key, value) => {
+              
+        let returned = null
+        if ( value == value * 1 && value != ''){
+            returned = Number(value)
+        }else returned = value
+
+        return returned
+
+    })
+}
+
+function writeFile (path, json) {    
+    let datt = JSON.stringify(json, replacer, 1)
+    console.log('data2 ', datt)
+    fs.writeFileSync(path, datt)
 }
 
 
-                     let vect =   [[ -54.492187500000014, 11.523087506868507 ],
-                        [ -38.671875000000014, -9.795677582829725 ],
-                        [ -38.671875000000014, 15.623036831528267 ],
-                        [ -54.492187500000014, 11.523087506868507 ]]
+let vect =      [[ -54.492187500000014, 11.523087506868507 ],
+                [ -38.671875000000014, -9.795677582829725 ],
+                [ -38.671875000000014, 15.623036831528267 ],
+                [ -54.492187500000014, 11.523087506868507 ]]
