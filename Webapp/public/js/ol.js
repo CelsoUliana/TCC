@@ -1,5 +1,7 @@
 var map
 
+// errors --> https://openlayers.org/en/latest/doc/errors/
+
 
 /* Adiciona mapa base do OSM */
 var baseLayer = new ol.layer.Tile({
@@ -35,7 +37,7 @@ pointsLayer.getSource().on('change', function(evt){
       console.log('feat source: ');
       console.log(features)
       
-      console.log(features[0].getGeometry().getCoordinates())
+      console.log('coordinates - ', features[0].getGeometry().getCoordinates())
       console.log(features[0].getGeometry().getType())
       
     }
@@ -88,7 +90,7 @@ var sketch
 
 /* Adiciona a fonte do desenho */
 var drawingSource = new ol.source.Vector({
-    useSpatialIndex: false
+    useSpatialIndex:false
 })
 
 /* Adiciona o layer do desenho */
@@ -97,6 +99,19 @@ var drawingLayer = new ol.layer.Vector({
     source: drawingSource
 })
 map.addLayer(drawingLayer)
+
+var drawingLayer2 = new ol.layer.Vector({
+    projection: view.getProjection(),
+    source: new ol.source.Vector({
+        useSpatialIndex:false
+    })
+})
+map.addLayer(drawingLayer2)
+
+
+function manter(feat){
+    drawingLayer2.getSource().addFeature(feat)
+}
 
 /* Declara as interações e listener de forma global para usar eles depois*/
 
@@ -114,31 +129,32 @@ draw = new ol.interaction.Draw({
 })
 map.addInteraction(draw)
 
-/* Funcão para desativar qualquer seletiva e deletar poligonos existente, assim podendo somente um polygono ser desenhado(talvez util para persistir) / 
+//Funcão para desativar qualquer seletiva e deletar poligonos existente, assim podendo somente um polygono ser desenhado(talvez util para persistir) / 
 draw.on('drawstart', (event) => {
-	drawingSource.clear()
-	//selectedFeatures.clear()
-	select.setActive(false)
+	//drawingSource.clear()
+	selectedFeatures.clear()
+	//select.setActive(false)
 	
 	sketch = event.feature
 	
 	listener = sketch.getGeometry().on('change', (event) => {
 		selectedFeatures.clear()
-		var polygon = event.target
+		/* var polygon = event.target
 		var features = pointsLayer.getSource().getFeatures()
 
 		for (var i = 0 ; i < features.length; i++){
 			if(polygon.intersectsExtent(features[i].getGeometry().getExtent())){
 				selectedFeatures.push(features[i])
 			}
-		}
+		} */
 	})
 }, this)
-*/
+
 
 /* Reativa a seleção depois de 300ms para evitar clicks seguidos(de acordo com a documentação do OL). */
 draw.on('drawend', (event) => {
-
+    sketch = null
+   
     /* 
     coisas do Celso
     ----------------------------------------------------------------------------------------------
@@ -146,6 +162,8 @@ draw.on('drawend', (event) => {
     sketch = null
     delaySelectActivate()
     selectedFeatures.clear()
+    sketch = null
+    drawingSource.clear()
 
     ----------------------------------------------------------------------------------------------
 
@@ -209,7 +227,6 @@ draw.on('drawend', (event) => {
 
     console.log(coordinatesProjectionMercatorFromMap);
     console.log('--------------------- bp -------------------');
-     --------------------------------------------------------------------------------------------
     */
 
     var polygon = new ol.geom.Polygon(coordinatesProjectionMercatorFromMap)
@@ -218,7 +235,7 @@ draw.on('drawend', (event) => {
         geometry: polygon
     })
 
-    
+    //draw
     /*problem with projection:
     
     toLonLat        emite da latitude longitude para a nova projection
@@ -231,9 +248,17 @@ draw.on('drawend', (event) => {
                             
                             */
 
+    let featuresSource = drawingSource.getFeatures();
+
+    if (featuresSource.length > 1){
+        let lastFeature = featuresSource[featuresSource.length - 1];
+        drawingSource.removeFeature(lastFeature);
+        manter(lastFeature)
+    }
+      
+    drawingSource.addFeature(features)
     
-    drawingLayer.getSource().addFeature(features)
-   
+    //drawingLayer.getSource().addFeature(draw)
 /*     
     Desta forma dá para criar tambem 
 
@@ -248,11 +273,19 @@ draw.on('drawend', (event) => {
     })
  */
 
+ //drawingSource === drawingLayer.getSource()
 
-    var allFeatures = drawingLayer.getSource().getFeatures()
+    console.log('feat> ', features);
+
+    var allFeatures = drawingSource.getFeatures()
+    
+    console.log('al: ', allFeatures);
+    // fazer tratamento das coordenadas aqui
+    // trat
+
     var writer = new ol.format.GeoJSON()
     var geoJsonData = writer.writeFeaturesObject(allFeatures)
-    
+        
     console.log('----------------------------->> breakpoint');
     console.log(geoJsonData)
     
@@ -292,7 +325,7 @@ draw.on('drawend', (event) => {
 
 var sendJSON = (dataToStringify) => {
 
-    console.log(dataToStringify)
+    //console.log(dataToStringify)
 
     $.ajax({
 
