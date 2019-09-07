@@ -1,0 +1,8 @@
+node_modules/
+log
+manifest.yml
+.project
+LICENSE
+annotations.md
+.cfignore
+past/*
