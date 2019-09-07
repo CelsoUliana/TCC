@@ -5,3 +5,4 @@ manifest.yml
 LICENSE
 annotations.md
 .cfignore
+past/*
