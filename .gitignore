@@ -1,0 +1,11 @@
+node_modules
+log
+manifest.yml
+.project
+LICENSE
+annotations.md
+.cfignore
+
+past/Webapp/node_modules/
+past/Webapp/public/json/
+past/coisas_
