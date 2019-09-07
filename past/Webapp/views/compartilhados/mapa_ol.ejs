@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" type="text/css" href="css/page.css"/>
+        <% include ../compartilhados/inclui %>
+        <link rel="stylesheet" type="text/css" href="map-initial-style.css"/>
+
+
+        <link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.2.0/css/ol.css" type="text/css">
+        <style>
+            html,
+            body {
+                height: 100%;
+                width: 100%;
+                padding: 0;
+                margin: 0;
+                border: 0;
+            }
+
+            .map {
+                height: 100%;
+                width: 100%;
+            }
+
+            #btnPoint {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+            }
+
+            #btnLine {
+                position: absolute;
+                top: 10px;
+                left: 80px;
+            }
+
+            #btnArea {
+                position: absolute;
+                top: 10px;
+                left: 150px;
+            }
+
+            #btnEdit {
+                position: absolute;
+                top: 10px;
+                left: 220px;
+            }
+
+            #btnDelete {
+                position: absolute;
+                top: 10px;
+                left: 290px;
+            }
+
+            .btn-active {
+                background-color: #0d47a1 !important;
+            }
+        </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.2.0/build/ol.js"></script>
+        <title>OpenLayers example</title>
+    </head>
+    <body>
+        <h2>My Map<br></h2>
+        <div id="map" class="map">
+            <script type="module" src="ol.js"></script>
+        </div>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <button id="btnPoint" class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored">
+            <i class="material-icons">add_location</i>
+        </button>
+        <button id="btnLine" class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored">
+            <i class="material-icons">timeline</i>
+        </button>
+        <button id="btnArea" class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored">
+            <i class="material-icons">signal_cellular_null</i>
+        </button>
+        <button id="btnEdit" class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored">
+            <i class="material-icons">build</i>
+        </button>
+        <button id="btnDelete" class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored">
+            <i class="material-icons">delete</i>
+        </button>
+  </body>
+</html>

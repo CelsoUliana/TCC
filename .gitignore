@@ -5,5 +5,8 @@ manifest.yml
 LICENSE
 annotations.md
 .cfignore
-past/*
 coisas_
+
+past/Webapp/node_modules/
+past/Webapp/public/json/
+past/coisas_

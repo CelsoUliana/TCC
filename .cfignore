@@ -1,3 +1,7 @@
 node_modules
+<<<<<<< HEAD
 log
 past/*
+=======
+log
+>>>>>>> 6e5a1bad832d58def126b5cd0d155eef745ed362
