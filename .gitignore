@@ -1,13 +1,15 @@
-node_modules/
+*node_modules/
 log
 manifest.yml
 .project
 LICENSE
 annotations.md
 .cfignore
-past/*
+/past/*
 coisas_
 
 past/Webapp/node_modules/
 past/Webapp/public/json/
 past/coisas_
+
+*README.md

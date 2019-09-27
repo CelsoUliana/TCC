@@ -1,0 +1,31 @@
+#map {
+    margin: auto;
+    padding: auto;
+    min-width: 30px;
+    min-height: 30px;
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    align-items: center;
+    border: 1px solid red;
+    background-color: aqua;
+}
+
+.container-button {
+    position: absolute;
+    margin: auto;
+    height: 100px;
+    width: 100%;
+    z-index: 10;
+    border: 1px solid red;
+}
+
+.container-button button {
+    margin-top: 20px;  
+
+}
+
+.container-button .button-pattern {
+    margin-top: 10px;    
+    z-index: 10;
+}

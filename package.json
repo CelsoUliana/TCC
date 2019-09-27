@@ -3,7 +3,8 @@
 	"version": "0.0.2",
 	"private": true,
 	"scripts": {
-		"start": "node src/app.js"
+		"dev": "nodemon back/src/app.js",
+		"start": "node back/src/app.js"
 	},
 	"dependencies": {
 		"cfenv": "^1.2.2",
@@ -14,5 +15,8 @@
 	"repository": {},
 	"engines": {
 		"node": "10.x"
+	},
+	"devDependencies": {
+		"nodemon": "^1.19.2"
 	}
 }
