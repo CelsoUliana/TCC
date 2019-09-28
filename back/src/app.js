@@ -8,12 +8,15 @@ const cfenv = require('cfenv')
 const app = require('../config/express-env')
 
 // routes
-const connectionRoute = require('./routes/connect')
-const homePageRoute = require('./routes/home')
+const api = require('./routes/api-route')
+const front = require('./routes/home-route')
 
-// start routes
-app.use('/connect', connectionRoute)
-app.use('/', homePageRoute)
+// start api routes
+app.use('/api/v1/', api)
+
+// start frontend
+front.init(app)
+app.use('/', front.router)
 
 // get the app environment from Cloud Foundry
 const appEnv = cfenv.getAppEnv()
