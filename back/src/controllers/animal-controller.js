@@ -1,18 +1,18 @@
 const dataHandler = require('../model/data-handler')
 const constants = require('../constants')
 
-exports.select = async (req, res) => {
+exports.select = async(req, res) => {
     const parameter = req.query
     
     if (parameter.name) {  
         let file = parameter.name + '.json'   
-        await dataHandler.get(file, constants.AREA_MODEL , (content) => {
+        await dataHandler.get(file, constants.ANIMAL_MODEL, (content) => {
             res.json(content)
         })
         return 
     }
 
-    res.json(dataHandler.listOfAllFeatures(constants.AREA_MODEL))   
+    res.json(dataHandler.listOfAllFeatures(constants.ANIMAL_MODEL))   
 }
 
 exports.update = async(req, res) => {
@@ -21,8 +21,8 @@ exports.update = async(req, res) => {
 }
 
 exports.insert = async(req, res) => {
-    dataHandler.write(req.body, constants.AREA_MODEL)
-    res.send(req.body)
+    console.log('opa!')
+    res.send('You\'re connected!')
 }
 
 exports.getHomePage = (req, res) => {

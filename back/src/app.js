@@ -12,7 +12,7 @@ const api = require('./routes/api-route')
 const front = require('./routes/home-route')
 
 // start api routes
-app.use('/api/v1/', api)
+app.use('/api/v1', api)
 
 // start frontend
 front.init(app)

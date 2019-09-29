@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const area = require('../controllers/area-controller')
-const coordinatesAnimal = require('../controllers/coordinates-animal-controller')
+const coordinatesAnimal = require('../controllers/animal-controller')
 const analyzes = require('../controllers/analyzes-controller')
 
 
@@ -13,7 +13,7 @@ router.route('/area')
     .put(area.update)
 
 
-router.route('/coordinates')
+router.route('/animal')
     .get(coordinatesAnimal.select)
     .post(coordinatesAnimal.insert)
 
