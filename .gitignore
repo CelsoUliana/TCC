@@ -11,6 +11,8 @@ coisas_
 
 *.csv
 
+*.csv
+
 past/Webapp/node_modules/
 past/Webapp/public/json/
 past/coisas_
