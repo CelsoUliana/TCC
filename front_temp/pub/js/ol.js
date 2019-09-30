@@ -1,5 +1,6 @@
 var map
 
+
 // errors --> https://openlayers.org/en/latest/doc/errors/
 
 function getContent () {
@@ -8,7 +9,31 @@ function getContent () {
         url: 'http://localhost:6001/api/v1/animal',
         success: (content) => {
 
+
+            let item = 'Limpar'
+            let li = document.createElement('LI')
+            let btn = document.createElement('button')
+
+            btn.setAttribute('onclick', 'removeData()')
+            btn.setAttribute('value', item)
+            btn.appendChild(document.createTextNode(item))
+            li.appendChild(btn)
+
+            document.querySelector('#map > div.menu > div > ul').appendChild(li)
+
+            let desenhar = 'Modo Desenho'
+            let lid = document.createElement('LI')
+            let btnd = document.createElement('button')
+
+            btnd.setAttribute('onclick', 'draw()')
+            btnd.setAttribute('value', desenhar)
+            btnd.appendChild(document.createTextNode(desenhar))
+            lid.appendChild(btnd)
+
+            document.querySelector('#map > div.menu > div > ul').appendChild(lid)
+
             content.forEach(item => {
+                console.log(item)
                 let li = document.createElement('LI')
                 let btn = document.createElement('button')
 
@@ -58,20 +83,32 @@ var animalSource = new ol.source.Vector({
     format: new ol.format.GeoJSON()
 })
 
+function removeData(){
+    removeLayer('movimento')
+}
+
+var colors = [{color: 'red', width: 2}, {color: 'green', width: 2}, {color: 'blue', width: 2},
+{color: 'white', width: 2}, {color: 'purple', width: 2}, {color: 'cyan', width: 2}, {color: 'black', width: 2},
+{color: 'brown', width: 2}]
+
 function loadData(value) {
     if (value.error) console.log(value.error)
     else{
 
-        removeLayer('movimento')
+        //removeLayer('movimento')
         var animalSource = new ol.source.Vector({
             url: '/api/v1/animal?name=' + value,
             format: new ol.format.GeoJSON(),
-            feature: [new ol.Feature()]
+            feature: [new ol.Feature()],
+            
         })
         
         /* Adiciona a fonte de dados que foi pega da API e cria uma layer com ela. */
         var JsonLayer = new ol.layer.Vector({
             source: animalSource,
+            style: new ol.style.Style({
+                stroke: new ol.style.Stroke(colors.pop())
+            })
             //source: geoPointsLayer
         })
 
@@ -153,296 +190,315 @@ init() // Chama a inicialização
 
 /* Adiciona ol.collection para segurar todas as seleções */
 var select = new ol.interaction.Select()
-map.addInteraction(select)
-var selectedFeatures = select.getFeatures()
 
-/* //////////// Adiciona o desenho */
+function draw(){
+    map.addInteraction(select)
+    var selectedFeatures = select.getFeatures()
 
-/* O desenho atual */
-var sketch
+    /* //////////// Adiciona o desenho */
 
-/* Adiciona a fonte do desenho */
-var drawingSource = new ol.source.Vector({
-    useSpatialIndex:false
-})
+    /* O desenho atual */
+    var sketch
 
-/* Adiciona o layer do desenho */
-var drawingLayer = new ol.layer.Vector({
-    projection: view.getProjection(),
-    source: drawingSource
-})
-map.addLayer(drawingLayer)
-
-var drawingLayer2 = new ol.layer.Vector({
-    projection: view.getProjection(),
-    source: new ol.source.Vector({
+    /* Adiciona a fonte do desenho */
+    var drawingSource = new ol.source.Vector({
         useSpatialIndex:false
     })
-})
-map.addLayer(drawingLayer2)
+
+    /* Adiciona o layer do desenho */
+    var drawingLayer = new ol.layer.Vector({
+        projection: view.getProjection(),
+        source: drawingSource
+    })
+    map.addLayer(drawingLayer)
+
+    var drawingLayer2 = new ol.layer.Vector({
+        projection: view.getProjection(),
+        source: new ol.source.Vector({
+            useSpatialIndex:false
+        })
+    })
+    map.addLayer(drawingLayer2)
 
 
-function manter(feat){
-    drawingLayer2.getSource().addFeature(feat)
-}
+    function manter(feat){
+        drawingLayer2.getSource().addFeature(feat)
+    }
 
-/* Declara as interações e listener de forma global para usar eles depois*/
+    /* Declara as interações e listener de forma global para usar eles depois*/
 
-var draw
-var modify
-var listener
+    var draw
+    var modify
+    var listener
 
-// As interações do desenho
-draw = new ol.interaction.Draw({
-    projection: view.getProjection(),
-    source: drawingSource,
-    type: 'Polygon', // Tipo de desenho poligono
-    //only draw when Ctrl is pressed.
-    //condition : ol.events.condition.platformModifierKeyOnly // Só desenha quando o ctrl estiver pressionado
-})
-map.addInteraction(draw)
+    // As interações do desenho
+    draw = new ol.interaction.Draw({
+        projection: view.getProjection(),
+        source: drawingSource,
+        type: 'Polygon', // Tipo de desenho poligono
+        //only draw when Ctrl is pressed.
+        //condition : ol.events.condition.platformModifierKeyOnly // Só desenha quando o ctrl estiver pressionado
+    })
+    map.addInteraction(draw)
 
-//Funcão para desativar qualquer seletiva e deletar poligonos existente, assim podendo somente um polygono ser desenhado(talvez util para persistir) / 
-draw.on('drawstart', (event) => {
-	//drawingSource.clear()
-	selectedFeatures.clear()
-	//select.setActive(false)
-	
-	sketch = event.feature
-	
-	listener = sketch.getGeometry().on('change', (event) => {
-		selectedFeatures.clear()
-		/* var polygon = event.target
-		var features = pointsLayer.getSource().getFeatures()
-
-		for (var i = 0 ; i < features.length; i++){
-			if(polygon.intersectsExtent(features[i].getGeometry().getExtent())){
-				selectedFeatures.push(features[i])
-			}
-		} */
-	})
-}, this)
-
-
-/* Reativa a seleção depois de 300ms para evitar clicks seguidos(de acordo com a documentação do OL). */
-draw.on('drawend', (event) => {
-    sketch = null
-   
-    /* 
-    coisas do Celso
-    ----------------------------------------------------------------------------------------------
-
-    sketch = null
-    delaySelectActivate()
-    selectedFeatures.clear()
-    sketch = null
-    drawingSource.clear()
-
-    ----------------------------------------------------------------------------------------------
-
-    /* Pra entendimento:
-    
-    1. "event" é uma variavel que receberá um Feature ol - Tem um Geometry proprio (não sei ainda
-        se declarado). Deste modo possui as caracteristicas de um Feature inciso
-    2. A idéia é então uma variavel receber este event e add as coord
-    3. Para que funcione existe uma ordem de processos de criação de objetos:
-        1. new Layer (receber conteudo - como o drawend está no 'drawingLayer' ele já foi criado)
-        2. new Source (ver certinho esse 'PEÃO' o que faz, mas é o segundo nivel)
-        3. new Feature (guarda type, cor, geometry ..)
-        4. new Geometry (Polygon, Point, LineString )
-    4. chamar:
-        1. var allFeatures = drawingLayer.getSource().getFeatures()
-        2. var writer = new ol.format.GeoJSON()
-        3. var geoJsonData = writer.writeFeaturesObject(allFeatures)
-    
-    Deste modo criando com 'new' você preeenche o objeto e allFeatures recebe
-    as Features necessárias para criação do JSON 
-
-    Do modo que estava antes era aproveitado de um Outro source :json/geojson.json
-    O Feature e Geometry existentes daquele objeto
-
-    Vale ressaltar que 'event' grava todos os dados do click. Logo, lança-se esses 
-    dados dentro da Feature do source do Layer de desenho
-
-    */
-
-    /* console.log(event.feature.getGeometry().getCoordinates())
-    console.log(event.feature.getGeometry()) */
-
-    /* recebe do evento 'event' os click na tela: não sei o porquê de vir 4 ao inves de 3.
-    Temos que investigar isto depois */
-    let coordinatesFromMap = event.feature.getGeometry().getCoordinates();
-
-    let coordinatesProjectionMercatorFromMap = new Array();
-    
-    coordinatesFromMap.forEach(element => {
+    //Funcão para desativar qualquer seletiva e deletar poligonos existente, assim podendo somente um polygono ser desenhado(talvez util para persistir) / 
+    draw.on('drawstart', (event) => {
+        //drawingSource.clear()
+        selectedFeatures.clear()
+        //select.setActive(false)
         
-        let coordinatesToParse = new Array();
+        sketch = event.feature
+        
+        listener = sketch.getGeometry().on('change', (event) => {
+            selectedFeatures.clear()
+            /* var polygon = event.target
+            var features = pointsLayer.getSource().getFeatures()
 
-        element.forEach(elementArrayInternal => {
-            coordinatesToParse.push(ol.proj.toLonLat(elementArrayInternal, 'EPSG:3857'))
+            for (var i = 0 ; i < features.length; i++){
+                if(polygon.intersectsExtent(features[i].getGeometry().getExtent())){
+                    selectedFeatures.push(features[i])
+                }
+            } */
+        })
+    }, this)
+
+
+    /* Reativa a seleção depois de 300ms para evitar clicks seguidos(de acordo com a documentação do OL). */
+    draw.on('drawend', (event) => {
+        sketch = null
+        map.removeInteraction(draw)
+        /* 
+        coisas do Celso
+        ----------------------------------------------------------------------------------------------
+
+        sketch = null
+        delaySelectActivate()
+        selectedFeatures.clear()
+        sketch = null
+        drawingSource.clear()
+
+        ----------------------------------------------------------------------------------------------
+
+        /* Pra entendimento:
+        
+        1. "event" é uma variavel que receberá um Feature ol - Tem um Geometry proprio (não sei ainda
+            se declarado). Deste modo possui as caracteristicas de um Feature inciso
+        2. A idéia é então uma variavel receber este event e add as coord
+        3. Para que funcione existe uma ordem de processos de criação de objetos:
+            1. new Layer (receber conteudo - como o drawend está no 'drawingLayer' ele já foi criado)
+            2. new Source (ver certinho esse 'PEÃO' o que faz, mas é o segundo nivel)
+            3. new Feature (guarda type, cor, geometry ..)
+            4. new Geometry (Polygon, Point, LineString )
+        4. chamar:
+            1. var allFeatures = drawingLayer.getSource().getFeatures()
+            2. var writer = new ol.format.GeoJSON()
+            3. var geoJsonData = writer.writeFeaturesObject(allFeatures)
+        
+        Deste modo criando com 'new' você preeenche o objeto e allFeatures recebe
+        as Features necessárias para criação do JSON 
+
+        Do modo que estava antes era aproveitado de um Outro source :json/geojson.json
+        O Feature e Geometry existentes daquele objeto
+
+        Vale ressaltar que 'event' grava todos os dados do click. Logo, lança-se esses 
+        dados dentro da Feature do source do Layer de desenho
+
+        */
+
+        /* console.log(event.feature.getGeometry().getCoordinates())
+        console.log(event.feature.getGeometry()) */
+
+        /* recebe do evento 'event' os click na tela: não sei o porquê de vir 4 ao inves de 3.
+        Temos que investigar isto depois */
+        let coordinatesFromMap = event.feature.getGeometry().getCoordinates();
+
+        let coordinatesProjectionMercatorFromMap = new Array();
+        
+        coordinatesFromMap.forEach(element => {
+            
+            let coordinatesToParse = new Array();
+
+            element.forEach(elementArrayInternal => {
+                coordinatesToParse.push(ol.proj.toLonLat(elementArrayInternal, 'EPSG:3857'))
+            });
+
+            coordinatesProjectionMercatorFromMap.push(coordinatesToParse);
         });
 
-        coordinatesProjectionMercatorFromMap.push(coordinatesToParse);
-    });
+        /* ---------------------------------------------------------------------------------------     
+                    -- TESTING NEW ARRAY ACIMA
 
-    /* ---------------------------------------------------------------------------------------     
-                -- TESTING NEW ARRAY ACIMA
+        let coordi = [-5596413.4629274625, -1839380.6486544814];
+        coordi = ol.proj.toLonLat(coordi, 'EPSG:3857')
+        
+        console.log('--------------------------------------------------------------->');
+        console.log(coordi);
+        console.log('--------------------------------------------------------------->');
 
-    let coordi = [-5596413.4629274625, -1839380.6486544814];
-    coordi = ol.proj.toLonLat(coordi, 'EPSG:3857')
-    
-    console.log('--------------------------------------------------------------->');
-    console.log(coordi);
-    console.log('--------------------------------------------------------------->');
+        console.log('--------------------- bp -------------------');
 
-    console.log('--------------------- bp -------------------');
+        console.log(coordinatesProjectionMercatorFromMap);
+        console.log('--------------------- bp -------------------');
+        */
 
-    console.log(coordinatesProjectionMercatorFromMap);
-    console.log('--------------------- bp -------------------');
+        var polygon = new ol.geom.Polygon(coordinatesProjectionMercatorFromMap)
+
+        let features = new ol.Feature({
+            geometry: polygon
+        })
+
+        //draw
+        /*problem with projection:
+        
+        toLonLat        emite da latitude longitude para a nova projection
+        fromLonLat      do contrario
+        
+        projection mais usadas  4326 -> 
+                                3857 -> Mercator
+
+                                ol.proj.format('{x}, {y}', n) n -> casas decimais 
+                                
+                                */
+
+        let featuresSource = drawingSource.getFeatures();
+
+        if (featuresSource.length > 1){
+            let lastFeature = featuresSource[featuresSource.length - 1];
+            drawingSource.removeFeature(lastFeature);
+            manter(lastFeature)
+        }
+        
+        drawingSource.addFeature(features)
+        
+        //drawingLayer.getSource().addFeature(draw)
+    /*     
+        Desta forma dá para criar tambem 
+
+        let layerToJson = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                features: [
+                    new ol.Feature({
+                        geometry: polygon
+                    })
+                ]
+            })
+        })
     */
 
-    var polygon = new ol.geom.Polygon(coordinatesProjectionMercatorFromMap)
+    //drawingSource === drawingLayer.getSource()
 
-    let features = new ol.Feature({
-        geometry: polygon
-    })
+        console.log('feat> ', features);
 
-    //draw
-    /*problem with projection:
-    
-    toLonLat        emite da latitude longitude para a nova projection
-    fromLonLat      do contrario
-    
-    projection mais usadas  4326 -> 
-                            3857 -> Mercator
-
-                            ol.proj.format('{x}, {y}', n) n -> casas decimais 
-                            
-                            */
-
-    let featuresSource = drawingSource.getFeatures();
-
-    if (featuresSource.length > 1){
-        let lastFeature = featuresSource[featuresSource.length - 1];
-        drawingSource.removeFeature(lastFeature);
-        manter(lastFeature)
-    }
-      
-    drawingSource.addFeature(features)
-    
-    //drawingLayer.getSource().addFeature(draw)
-/*     
-    Desta forma dá para criar tambem 
-
-    let layerToJson = new ol.layer.Vector({
-        source: new ol.source.Vector({
-            features: [
-                new ol.Feature({
-                    geometry: polygon
-                })
-            ]
-        })
-    })
- */
-
- //drawingSource === drawingLayer.getSource()
-
-    console.log('feat> ', features);
-
-    var allFeatures = drawingSource.getFeatures()
-    
-    console.log('al: ', allFeatures);
-    // fazer tratamento das coordenadas aqui
-    // trat
-
-    var writer = new ol.format.GeoJSON()
-    var geoJsonData = writer.writeFeaturesObject(allFeatures)
+        var allFeatures = drawingSource.getFeatures()
         
-    console.log('----------------------------->> breakpoint');
-    console.log(geoJsonData)
-    
-    sendJSON(geoJsonData)
+        console.log('al: ', allFeatures);
+        // fazer tratamento das coordenadas aqui
+        // trat
 
-    /*const data = JSON.stringify({
-        todo: Array
+        var writer = new ol.format.GeoJSON()
+        var geoJsonData = writer.writeFeaturesObject(allFeatures)
+            
+        console.log('----------------------------->> breakpoint');
+        console.log(geoJsonData)
+        
+        sendJSON(geoJsonData)
+
+        /*const data = JSON.stringify({
+            todo: Array
+        })
+
+        const options = {
+            hostname: '/',
+            port: 8080,
+            path: '/api/generateJson',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': data.length
+            }
+        }
+
+        const req = https.request(options, (res) => {
+            console.log(`statusCode: ${res.statusCode}`)
+        
+            res.on('data', (d) => {
+                process.stdout.write(d)
+            })
+        })
+
+        req.on('error', (error) => {
+            console.error(error)
+        })
+        
+        req.write(data)
+        req.end()
+        */ // Nao funciona
     })
 
-    const options = {
-        hostname: '/',
-        port: 8080,
-        path: '/api/generateJson',
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Content-Length': data.length
-        }
+    var sendJSON = (dataToStringify) => {
+
+        // console.log(dataToStringify)
+
+        $.ajax({
+
+            type: "POST",
+            url: 'http://localhost:6001/api/v1/area',
+
+            data: dataToStringify,
+
+            success: (data2) => {
+
+                /*  caso o outro lado (servidor) receba a mensagem, ele retorna um 'data' faça o 
+                que quiser com esse 'data' */
+
+                /* console.log('data2 --> ' + JSON.stringify(data2))
+                console.log(data2) */
+
+                console.log('ok')
+
+                //$('p').text(JSON.stringify(data))
+            },
+
+            error(XMLHttpRequest, textStatus, errorThrown) {
+                //code to handle errors
+            }
+        });
     }
 
-    const req = https.request(options, (res) => {
-        console.log(`statusCode: ${res.statusCode}`)
-      
-        res.on('data', (d) => {
-            process.stdout.write(d)
+
+    /* Modifica poligonos existentes */
+
+    var modify = new ol.interaction.Modify({
+        //only allow modification of drawn polygons
+        features: drawingSource.getFeaturesCollection()
+    })
+    map.addInteraction(modify)
+
+    /* Selecione a as bordas do poligono para modifica-los. */
+    modify.on('modifystart', (event) => {
+        sketch = event.features
+        select.setActive(false)
+        listener = event.features.getArray()[0].getGeometry().on('change', (event) => {
+            // clear features so they deselect when polygon moves away
+            selectedFeatures.clear()
+            var polygon = event.target
+            var features = pointsLayer.getSource().getFeatures()
+
+            for (var i = 0; i < features.length; i++) {
+                if (polygon.intersectsExtent(features[i].getGeometry().getExtent())) {
+                    selectedFeatures.push(features[i])
+                }
+            }
         })
-    })
 
-    req.on('error', (error) => {
-        console.error(error)
-    })
-      
-    req.write(data)
-    req.end()
-	*/ // Nao funciona
-})
+    }, this)
 
-var sendJSON = (dataToStringify) => {
-
-    // console.log(dataToStringify)
-
-    $.ajax({
-
-        type: "POST",
-        url: 'http://localhost:6001/api/v1/area',
-
-        data: dataToStringify,
-
-        success: (data2) => {
-
-            /*  caso o outro lado (servidor) receba a mensagem, ele retorna um 'data' faça o 
-            que quiser com esse 'data' */
-
-            /* console.log('data2 --> ' + JSON.stringify(data2))
-            console.log(data2) */
-
-            console.log('ok')
-
-            //$('p').text(JSON.stringify(data))
-        },
-
-        error(XMLHttpRequest, textStatus, errorThrown) {
-            //code to handle errors
-        }
-    });
-}
-
-
-/* Modifica poligonos existentes */
-
-var modify = new ol.interaction.Modify({
-    //only allow modification of drawn polygons
-    features: drawingSource.getFeaturesCollection()
-})
-map.addInteraction(modify)
-
-/* Selecione a as bordas do poligono para modifica-los. */
-modify.on('modifystart', (event) => {
-    sketch = event.features
-    select.setActive(false)
-    listener = event.features.getArray()[0].getGeometry().on('change', (event) => {
-        // clear features so they deselect when polygon moves away
+    /* Termina de modificar a seleção de poligonos existentes. */
+    modify.on('modifyend', (event) => {
+        sketch = null
+        delaySelectActivate()
         selectedFeatures.clear()
-        var polygon = event.target
+        var polygon = event.features.getArray()[0].getGeometry()
         var features = pointsLayer.getSource().getFeatures()
 
         for (var i = 0; i < features.length; i++) {
@@ -450,36 +506,19 @@ modify.on('modifystart', (event) => {
                 selectedFeatures.push(features[i])
             }
         }
-    })
 
-}, this)
+    }, this)
 
-/* Termina de modificar a seleção de poligonos existentes. */
-modify.on('modifyend', (event) => {
-    sketch = null
-    delaySelectActivate()
-    selectedFeatures.clear()
-    var polygon = event.features.getArray()[0].getGeometry()
-    var features = pointsLayer.getSource().getFeatures()
 
-    for (var i = 0; i < features.length; i++) {
-        if (polygon.intersectsExtent(features[i].getGeometry().getExtent())) {
-            selectedFeatures.push(features[i])
-        }
+    /* //////////// Funções auxiliares */
+
+
+    /* Delay de 300 ms para seleção de aréa, como consta na documentação do open layers */
+    function delaySelectActivate() {
+        setTimeout(function () {
+            select.setActive(true)
+        }, 300)
     }
 
-}, this)
 
-
-/* //////////// Funções auxiliares */
-
-
-/* Delay de 300 ms para seleção de aréa, como consta na documentação do open layers */
-function delaySelectActivate() {
-    setTimeout(function () {
-        select.setActive(true)
-    }, 300)
 }
-
-
-
