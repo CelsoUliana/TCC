@@ -1,19 +1,15 @@
-''' 
-Celso Antonio - August 2019 
-'''
-
 import csv
 
 data = list()
 
-with open('dset.csv', newline='') as csvfile:
+with open('../model/csv/dset.csv', newline='') as csvfile:
     data = list(csv.DictReader(csvfile))
 
 
 data.sort(key = lambda x: x['ColarID'])
 
 
-with open('datasetnormalizado.csv', newline='', mode='w') as csvfile:
+with open('../model/csv/datasetnormalizado.csv', newline='', mode='w') as csvfile:
     fieldnames = ['ID','AnimalID','AX','AY','AZ','MX','MY','MZ','GX','GY','GZ','DateTime','Latitude','Longitude','Vel Sobre Solo',
     'Aceleracao','Angulo','Distancia','DistanciaAcumulada','MaiorAceleracao','MaiorVelocidade','MediaAceleracao','MediaVelocidade',
     'MenorAceleracao','MenorVelocidade','PercentualParaTras','PercentualSemMovimento','TipoMovimento','Velocidade','PDOP','HDOP',

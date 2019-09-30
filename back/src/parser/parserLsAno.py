@@ -1,7 +1,3 @@
-''' 
-Celso Antonio - September 2019 
-'''
-
 import csv
 import json
 
@@ -15,7 +11,7 @@ my_json = {
 
 coordArray = {}
  
-with open('datasetnormalizado.csv', newline='') as csvfile:
+with open('../model/csv/datasetnormalizado.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
     for row in reader:
         key = str(row['AnimalID']) + str(row['Ano']) + str(row['ID'])
@@ -50,5 +46,5 @@ for keys in coordArray:
     my_json['features'].append(coordArray[keys])
     #print(coordArray[keys])
 
-with open('test.json', 'w') as json_file:
+with open('../model/json/animal/test.json', 'w') as json_file:
     json.dump(my_json, json_file)

@@ -1,5 +1,6 @@
 const dataHandler = require('../model/data-handler')
 const constants = require('../constants')
+const { spawn } = require('child_process')
 
 exports.select = async(req, res) => {
     const parameter = req.query
@@ -23,8 +24,19 @@ exports.update = async(req, res) => {
 exports.insert = async(req, res) => {
     console.log('opa!')
     res.send('You\'re connected!')
-}
+}   
 
 exports.getHomePage = (req, res) => {
     res.render('index')
+}
+
+
+exports.executeParser = (req, res) => {
+    spawn('python', ['../parser/parserLsAno.py'])
+    res.status(200)
+}
+
+exports.executeNormalizer = (req, res) => {
+    spawn('python', ['../parser/normalizador.py'])
+    res.status(200)
 }
