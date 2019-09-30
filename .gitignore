@@ -9,6 +9,8 @@ annotations.md
 coisas_
 *json/
 
+*.csv
+
 past/Webapp/node_modules/
 past/Webapp/public/json/
 past/coisas_
