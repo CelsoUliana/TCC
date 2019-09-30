@@ -15,15 +15,18 @@ exports.select = async (req, res) => {
     res.json(dataHandler.listOfAllFeatures(constants.AREA_MODEL))   
 }
 
+
 exports.update = async(req, res) => {
     console.log('opa!')
     res.send('You\'re connected!')
 }
 
+
 exports.insert = async(req, res) => {
     dataHandler.write(req.body, constants.AREA_MODEL)
     res.send(req.body)
 }
+
 
 exports.getHomePage = (req, res) => {
     res.render('index')

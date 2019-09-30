@@ -31,23 +31,56 @@ var pointsLayer = new ol.layer.Vector({
     })
 })
 
-function loadData(value) {
-    map.removeLayer(JsonSource)
-    var JsonSource = new ol.source.Vector({
-        url: '/api/v1/area?name=' + value,
-        format: new ol.format.GeoJSON(),
-        feature: [new ol.Feature()]
-    })
-    
-    /* Adiciona a fonte de dados que foi pega da API e cria uma layer com ela. */
-    var JsonLayer = new ol.layer.Vector({
-        source: JsonSource,
-        //source: geoPointsLayer
-    })
+function removeLayer(name) {
+    var layersToRemove = [];
+    map.getLayers().forEach(layer => {
+        if (layer.get('name') == undefined ) console.log('undefined');
+        if (layer.get('name') != undefined && layer.get('name') === name) {
+            layersToRemove.push(layer);
+        }
+    });
 
-    map.addLayer(JsonLayer) // Adiciona tentativa de exportação
-    
-    console.log(value);
+    var len = layersToRemove.length;
+    for(var i = 0; i < len; i++) {
+        map.removeLayer(layersToRemove[i]);
+    }
+}
+
+function removeFeaturesSource (source) {
+    let featuresSource = source.getFeatures();
+
+    featuresSource.forEach(feature => {
+        source.removeFeature(feature)
+    })
+}
+
+var animalSource = new ol.source.Vector({
+    format: new ol.format.GeoJSON()
+})
+
+function loadData(value) {
+    if (value.error) console.log(value.error)
+    else{
+
+        removeLayer('movimento')
+        var animalSource = new ol.source.Vector({
+            url: '/api/v1/animal?name=' + value,
+            format: new ol.format.GeoJSON(),
+            feature: [new ol.Feature()]
+        })
+        
+        /* Adiciona a fonte de dados que foi pega da API e cria uma layer com ela. */
+        var JsonLayer = new ol.layer.Vector({
+            source: animalSource,
+            //source: geoPointsLayer
+        })
+
+        JsonLayer.set('name', 'movimento')
+
+        map.addLayer(JsonLayer) // Adiciona tentativa de exportação
+        
+        console.log(value)
+    }
 }
 
 /* let items = document.createElement('LI')
@@ -66,7 +99,8 @@ var baseLayer = new ol.layer.Tile({
 /* Adiciona uma view */
 var view = new ol.View({
     //projection: 'EPSG:3857', // projeção padrão
-    center: ol.proj.fromLonLat([-54.72722222, -20.45], 'EPSG:3857'),  // centro do mapa quando renderiza
+    center: ol.proj.transform([-54.72722222, -20.45], 'EPSG:4326', 'EPSG:3857'),
+    //center: ol.proj.fromLonLat([-54.72722222, -20.45], 'EPSG:3857'),  // centro do mapa quando renderiza
     zoom: 14, // nivel de zoom quando renderiza
 })
 

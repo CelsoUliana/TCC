@@ -30,15 +30,7 @@ exports.get = async (file, pathRequest, method) => {
     let thisPath = pathRequest === constants.AREA_MODEL ? pathAreaDir : pathAnimalDir
     
     fs.readFile(path.join(thisPath, file), (err, data) => {
-        if (err) localData = {
-                "type": "FeatureCollection",
-                "features": [{
-                  "type": "Feature",
-                  "geometry": {
-                   "type": "Polygon",
-                   "coordinates": [
-                    [[]]]}}]
-            }
+        if (err) localData = {err: err.message}
         else localData = JSON.parse(data)   
                     
         method(localData)     
