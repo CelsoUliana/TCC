@@ -18,9 +18,8 @@ div {
     margin: auto;
     width: 100%;
     display: flex;
-    justify-content: center;
-    justify-items: center;
-    align-self: center
+    justify-content: flex-end;
+    justify-items: flex-end;
     
 }
 
